@@ -31,10 +31,39 @@ TIMEOUT_SAMPLE_SIZE = 10
 TIMEOUT_WEIGHT = 0.7
 
 class TimeoutTracker:
-    """动态超时追踪器 - 基于历史响应时间调整超时 (使用中位数算法)"""
+    """动态超时追踪器 - 基于历史响应时间调整超时 (使用中位数算法)
+    
+    支持测速记忆持久化 - 重启后热启动
+    """
+    
+    CACHE_FILE = Path.home() / ".local" / "share" / "opencode" / "latency_cache.json"
     
     def __init__(self):
         self._history: Dict[str, List[float]] = {}
+        self._load_cache()  # 热启动：加载历史测速数据
+    
+    def _load_cache(self):
+        """从磁盘加载历史测速数据"""
+        try:
+            if self.CACHE_FILE.exists():
+                with open(self.CACHE_FILE, 'r') as f:
+                    data = json.load(f)
+                for provider, times in data.get("history", {}).items():
+                    if isinstance(times, list):
+                        self._history[provider] = times[:TIMEOUT_SAMPLE_SIZE]
+                logger.info(f"[OK] 加载测速缓存: {len(self._history)} 个 provider")
+        except Exception as e:
+            logger.debug(f"测速缓存加载失败: {e}")
+    
+    def save_cache(self):
+        """保存测速数据到磁盘"""
+        try:
+            self.CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            data = {"history": self._history, "updated_at": int(time.time())}
+            with open(self.CACHE_FILE, 'w') as f:
+                json.dump(data, f)
+        except Exception as e:
+            logger.debug(f"测速缓存保存失败: {e}")
     
     def record(self, provider: str, response_time: float):
         if provider not in self._history:
@@ -42,6 +71,9 @@ class TimeoutTracker:
         self._history[provider].append(response_time)
         if len(self._history[provider]) > TIMEOUT_SAMPLE_SIZE:
             self._history[provider].pop(0)
+        # 自动保存缓存 (每 10 次记录)
+        if sum(len(v) for v in self._history.values()) % 10 == 0:
+            self.save_cache()
     
     def _get_median(self, values: List[float]) -> float:
         """计算中位数，过滤离群值"""
@@ -63,6 +95,70 @@ class TimeoutTracker:
         return max(MIN_TIMEOUT, min(MAX_TIMEOUT, dynamic_timeout))
 
 timeout_tracker = TimeoutTracker()
+
+# ═════════════════════════════════════════════════════════════
+# JSON 配置容错机制
+# ═════════════════════════════════════════════════════════════
+
+def safe_json_load(file_path: Path, default: dict = None) -> dict:
+    """安全加载 JSON 文件，带自动回退机制
+    
+    Args:
+        file_path: JSON 文件路径
+        default: 加载失败时返回的默认值
+        
+    Returns:
+        解析后的字典，加载失败返回 default
+    """
+    if default is None:
+        default = {}
+    
+    backup_path = file_path.with_suffix(file_path.suffix + ".backup")
+    
+    try:
+        if file_path.exists():
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except json.JSONDecodeError as e:
+        logger.warning(f"⚠️ JSON 解析失败 {file_path}: {e}")
+        # 尝试加载备份
+        try:
+            if backup_path.exists():
+                with open(backup_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                logger.info(f"[OK] 已从备份恢复: {backup_path}")
+                return data
+        except Exception:
+            pass
+    except Exception as e:
+        logger.warning(f"⚠️ JSON 加载失败 {file_path}: {e}")
+    
+    return default
+
+def safe_json_save(file_path: Path, data: dict) -> bool:
+    """安全保存 JSON 文件，自动创建备份
+    
+    Args:
+        file_path: JSON 文件路径
+        data: 要保存的数据
+        
+    Returns:
+        是否保存成功
+    """
+    try:
+        # 先创建备份
+        if file_path.exists():
+            backup_path = file_path.with_suffix(file_path.suffix + ".backup")
+            import shutil
+            shutil.copy2(file_path, backup_path)
+        
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        logger.error(f"❌ JSON 保存失败 {file_path}: {e}")
+        return False
 
 # 彩色日志Formatter
 class ColoredFormatter(logging.Formatter):
@@ -172,6 +268,131 @@ class SmartModelDispatcher:
         del _os
         
         self.initialize_system()
+
+    # ═════════════════════════════════════════════════════════════
+    # 用户显式指定模型检测 (优先级最高)
+    # ═════════════════════════════════════════════════════════════
+    
+    def is_user_specified_model(self) -> bool:
+        """检查用户是否显式指定了模型（优先级最高，同时检查过期）"""
+        # 先检查是否过期
+        if self.is_user_specified_expired():
+            return False
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+                return auth_data.get("user_specified_model", False) is True
+        except Exception:
+            pass
+        return False
+    
+    def clear_user_specified_model(self) -> None:
+        """清除用户显式指定标记，允许自动切换"""
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+            else:
+                auth_data = {}
+            
+            if "user_specified_model" in auth_data:
+                del auth_data["user_specified_model"]
+            if "specified_model" in auth_data:
+                del auth_data["specified_model"]
+            
+            self.auth_config.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.auth_config, 'w') as f:
+                json.dump(auth_data, f, indent=2)
+        except Exception as e:
+            logger.warning(f"⚠️ 清除用户指定标记失败: {e}")
+    
+    def _set_user_specified_flag(self, provider: str, model: str, ttl_hours: int = 24) -> None:
+        """设置用户显式指定模型标记（带TTL有效期）
+        
+        Args:
+            provider: 模型提供商
+            model: 模型名称
+            ttl_hours: 有效期（小时），默认 24 小时
+        """
+        import time
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+            else:
+                auth_data = {}
+            
+            auth_data["user_specified_model"] = True
+            auth_data["specified_model"] = f"{provider}/{model}"
+            auth_data["specified_at"] = int(time.time())  # 设置时间戳
+            auth_data["specified_ttl"] = ttl_hours * 3600  # 转换为秒
+            auth_data["consecutive_failures"] = 0  # 重置连续失败计数
+            
+            self.auth_config.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.auth_config, 'w') as f:
+                json.dump(auth_data, f, indent=2)
+            logger.info(f"[OK] 用户指定模型标记已设置: {provider}/{model} (有效期 {ttl_hours} 小时)")
+        except Exception as e:
+            logger.warning(f"⚠️ 设置用户指定标记失败: {e}")
+    
+    def is_user_specified_expired(self) -> bool:
+        """检查用户指定模型是否过期"""
+        import time
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+                specified_at = auth_data.get("specified_at", 0)
+                ttl = auth_data.get("specified_ttl", 24 * 3600)  # 默认 24 小时
+                if time.time() - specified_at > ttl:
+                    logger.info("⏰ 用户指定模型已过期，恢复智能模式")
+                    self.clear_user_specified_model()
+                    return True
+        except Exception:
+            pass
+        return False
+    
+    def record_failure(self) -> bool:
+        """记录连续失败次数，超过阈值后自动切换智能模式
+        
+        Returns:
+            True if should switch to smart mode
+        """
+        MAX_FAILURES = 3  # 连续失败 3 次后切换
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+                
+                failures = auth_data.get("consecutive_failures", 0) + 1
+                auth_data["consecutive_failures"] = failures
+                
+                with open(self.auth_config, 'w') as f:
+                    json.dump(auth_data, f, indent=2)
+                
+                if failures >= MAX_FAILURES:
+                    logger.warning(f"⚠️ 指定模型连续失败 {failures} 次，自动切换智能模式")
+                    self.clear_user_specified_model()
+                    return True
+                else:
+                    logger.info(f"⚠️ 指定模型调用失败 ({failures}/{MAX_FAILURES})")
+        except Exception:
+            pass
+        return False
+    
+    def record_success(self) -> bool:
+        """成功后重置失败计数"""
+        try:
+            if self.auth_config.exists():
+                with open(self.auth_config, 'r') as f:
+                    auth_data = json.load(f)
+                if auth_data.get("consecutive_failures", 0) > 0:
+                    auth_data["consecutive_failures"] = 0
+                    with open(self.auth_config, 'w') as f:
+                        json.dump(auth_data, f, indent=2)
+        except Exception:
+            pass
 
     def _validate_google_key(self, key: str) -> bool:
         """Validate Google API key format
@@ -607,6 +828,17 @@ class SmartModelDispatcher:
             return False
 
     def activate_profile(self, profile_name: str) -> bool:
+        # [优先级修复] 用户显式执行profile命令时清除标记，允许自动切换
+        if self.is_user_specified_model():
+            specified = ""
+            try:
+                with open(self.auth_config, 'r') as f:
+                    specified = json.load(f).get("specified_model", "")
+            except:
+                pass
+            logger.info(f"ℹ️ 检测到用户显式切换profile，清除指定模型: {specified}")
+            self.clear_user_specified_model()
+
         try:
             profile = ModelProfile(profile_name)
         except ValueError:
@@ -648,8 +880,13 @@ class SmartModelDispatcher:
         logger.error("❌ 所有候选大脑均无法连接!")
         return False
     
-    def set_specific_model(self, full_model_string: str) -> bool:
-        """直接设置指定的模型，跳过竞速检测"""
+    def set_specific_model(self, full_model_string: str, skip_health_check: bool = False) -> bool:
+        """直接设置指定的模型，可选健康检测
+        
+        Args:
+            full_model_string: 模型字符串 (provider/model)
+            skip_health_check: 是否跳过健康检测（默认 False，执行检测）
+        """
         try:
             if "/" not in full_model_string:
                 logger.error(f"❌ 模型格式错误: {full_model_string} (应为 provider/model)")
@@ -698,8 +935,18 @@ class SmartModelDispatcher:
                 tier="specific"
             )
             
+            # [改进] 健康检测 - 如果模型不可用则报错
+            if not skip_health_check:
+                logger.info(f"🔍 正在检测模型可用性: {provider}/{model_name}...")
+                if not self.pre_flight_check(api):
+                    logger.error(f"❌ 模型不可用: {provider}/{model_name}，请检查 API 或选择其他模型")
+                    return False
+                logger.info(f"✅ 模型可用性检测通过")
+            
             self._write_config(api)
-            logger.info(f"🎯 精确锁定模型: {provider}/{model_name}")
+            # [优先级修复] 显式指定模型时设置标记（带 24 小时有效期）
+            self._set_user_specified_flag(provider, model_name, ttl_hours=24)
+            logger.info(f"🎯 精确锁定模型: {provider}/{model_name} (有效期 24 小时)")
             return True
             
         except Exception as e:

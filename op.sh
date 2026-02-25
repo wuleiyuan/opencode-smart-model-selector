@@ -91,6 +91,43 @@ auto_smart_mode() {
         exit 1
     fi
     
+    # [优先级修复] 检查用户是否显式指定了模型（同时检查有效期和失败次数）
+    user_specified=$("$PYTHON_CMD" -c "
+import json
+import time
+from pathlib import Path
+auth_config = Path.home() / '.local' / 'share' / 'opencode' / 'auth.json'
+if auth_config.exists():
+    with open(auth_config) as f:
+        data = json.load(f)
+    
+    if not data.get('user_specified_model'):
+        exit(0)
+    
+    specified_at = data.get('specified_at', 0)
+    ttl = data.get('specified_ttl', 24 * 3600)
+    if time.time() - specified_at > ttl:
+        print('EXPIRED')
+        exit(0)
+    
+    failures = data.get('consecutive_failures', 0)
+    if failures >= 3:
+        print('FAILED')
+        exit(0)
+    
+    print(data.get('specified_model', ''))
+" 2>/dev/null)
+
+    if [[ "$user_specified" == "EXPIRED" ]]; then
+        print_info "⏰ 用户指定模型已过期，恢复智能模式"
+    elif [[ "$user_specified" == "FAILED" ]]; then
+        print_info "🔄 用户指定模型连续失败过多，自动切换智能模式"
+    elif [[ -n "$user_specified" ]]; then
+        print_info "⚡ 尊重用户指定模型: $user_specified (手动指定 > 自动推荐)"
+        "$PYTHON_CMD" "$PYTHON_SCRIPT" --set "$user_specified"
+        return
+    fi
+    
     print_info "🧠 全自动智能分析任务..."
     
     # 获取模型推荐结果
@@ -183,7 +220,7 @@ is_task_description() {
     fi
     # 如果是已知命令词
     case "$first_arg" in
-        "smart"|"-s"|"--smart"|"current"|"help"|"-h"|"--help"|"main"|"coding"|"fast"|"crawler"|"chinese"|"research")
+        "smart"|"-s"|"--smart"|"current"|"help"|"-h"|"--help"|"main"|"coding"|"fast"|"crawler"|"chinese"|"research"|"auto"|"reset"|"set")
             return 1
             ;;
     esac
@@ -249,6 +286,29 @@ main() {
                     exit 1
                     ;;
             esac
+            ;;
+        "auto"|"reset"|"--auto")
+            "$PYTHON_CMD" -c "
+import json
+from pathlib import Path
+auth_config = Path.home() / '.local' / 'share' / 'opencode' / 'auth.json'
+if auth_config.exists():
+    with open(auth_config, 'r') as f:
+        data = json.load(f)
+    specified = data.get('specified_model', '')
+    keys_to_remove = ['user_specified_model', 'specified_model', 'specified_at', 'specified_ttl', 'consecutive_failures']
+    for key in keys_to_remove:
+        if key in data:
+            del data[key]
+    with open(auth_config, 'w') as f:
+        json.dump(data, f, indent=2)
+    if specified:
+        print(f'已清除指定模型: {specified}')
+    print('已恢复到智能模式')
+else:
+    print('当前已是智能模式')
+" 2>/dev/null
+            print_info "✅ 已恢复到智能模式"
             ;;
         "help"|"-h"|"--help")
             show_help

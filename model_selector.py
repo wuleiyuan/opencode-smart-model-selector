@@ -513,6 +513,19 @@ class SmartModelSelector:
         complexity = analyzer.get_complexity()
         is_urgent = analyzer.is_urgent()
         
+        # [成本优化] 长文本降级策略 - 超过 8000 tokens 自动切换免费模型
+        estimated_tokens = len(task) // 4  # 粗略估算: 4 字符 ≈ 1 token
+        LONG_TEXT_THRESHOLD = 8000
+        
+        # 只有非 coding 任务才触发长文本降级 (coding 需要高复杂度模型)
+        if estimated_tokens > LONG_TEXT_THRESHOLD and task_type != TaskType.CODING:
+            logger.info(f"📏 检测到长文本 ({estimated_tokens} tokens)，启用成本优化策略")
+            # 优先选择免费长上下文模型
+            free_long_context = ["gemini-1.5-flash", "qwen2.5-72b-instruct"]
+            for model_id in free_long_context:
+                if model_id in self.MODELS and self.MODELS[model_id].available:
+                    return self.MODELS[model_id], f"📏 长文本优化: {estimated_tokens} tokens > {LONG_TEXT_THRESHOLD}，自动降级到免费模型"
+        
         candidates = self.TASK_MODEL_MAP.get(task_type, self.TASK_MODEL_MAP[TaskType.GENERAL])
         
         cost_sensitive_tasks = {TaskType.CHAT, TaskType.TRANSLATION, TaskType.GENERAL}
