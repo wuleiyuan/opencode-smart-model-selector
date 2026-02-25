@@ -1,0 +1,26 @@
+{
+  "_comment": "OpenCode 智能模型调度系统 API 配置模板",
+  "_note": "此文件用于模板展示。真实密钥请配置到 ~/.local/share/opencode/auth.json",
+  "google_pro_api_keys": [
+    "YOUR_GEMINI_PRO_KEY_1",
+    "YOUR_GEMINI_PRO_KEY_2",
+    "YOUR_GEMINI_PRO_KEY_3"
+  ],
+  "google_free_api_keys": [
+    "YOUR_GEMINI_FREE_KEY_1",
+    "YOUR_GEMINI_FREE_KEY_2",
+    "YOUR_GEMINI_FREE_KEY_3"
+  ],
+  "anthropic_api_key": "YOUR_CLAUDE_API_KEY",
+  "deepseek_api_key": "YOUR_DEEPSEEK_API_KEY",
+  "minimax_api_key": "YOUR_MINIMAX_API_KEY",
+  "openai_api_key": "YOUR_OPENAI_API_KEY",
+  "kimi_api_key": "YOUR_KIMI_API_KEY",
+  "zhipuai_api_key": "YOUR_ZHIPUAI_API_KEY",
+  "groq_api_key": "YOUR_GROQ_API_KEY",
+  "qiniuyun_api_key": "YOUR_QINIUYUN_API_KEY",
+  "siliconflow_api_key": "YOUR_SILICONFLOW_API_KEY",
+  "doubao_api_key": "YOUR_DOUBAO_API_KEY",
+  "openrouter_api_key": "YOUR_OPENROUTER_API_KEY",
+  "opencode_api_key": "YOUR_OPENCODE_API_KEY"
+}
