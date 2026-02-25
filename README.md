@@ -1,39 +1,134 @@
-# 🧠 OpenCode 智能模型调度系统 v2.4
+# 🧠 OpenCode Smart Model Selector
+
+**智能模型调度系统 - 任何 API 都能智能切换**
+
+---
+
+## 🎯 核心定位
+
+> **主打智能切换模型。任何 API 都可以。**
+
+无论你有什么 API——Google、Claude、DeepSeek、OpenRouter、Kimi、硅基流动……只要配置好，系统自动为你智能调度！
 
 ## ✨ 核心特性
 
-- **5个Gemini 3 Pro轮询**: 智能负载均衡，避免单点限流
-- **多Provider支持**: Google、Anthropic、DeepSeek、SiliconFlow、MiniMax等
-- **静默自愈**: API故障自动切换，用户无感知
-- **冷静期管理**: 429限流智能冷却
-- **紧急熔断**: OpenRouter终极备选，永不宕机
-- **一键切换**: 简单命令激活不同模式
+| 特性 | 说明 |
+|------|------|
+| **🤖 智能切换** | 根据任务自动选择最优模型 |
+| **🔄 万物可轮换** | 任何 API 都能配置，多 Key 轮换负载均衡 |
+| **🛡️ 故障自动转移** | 主 API 不可用？自动切换备用，无需手动 |
+| **💰 成本优化** | 付费/免费 API 智能调度 |
+| **🏭 任意 Provider** | 支持 Google、Anthropic、DeepSeek、OpenRouter 等 |
+
+## 🤔 这系统能做什么？
+
+```
+你配置: Google API + DeepSeek API + OpenRouter API
+
+系统自动:
+├── Google 可用 → 用 Google
+├── Google 限额 → 自动切换 DeepSeek
+├── DeepSeek 不可用 → 自动切换 OpenRouter
+└── 全都挂了 → 报错（但不会卡死）
+```
+
+### 简单说：只要你有 API，系统就能帮你轮换着用！
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 1. 克隆
+
 ```bash
-cd /path/to/smart-model-selector
-pip install -r requirements.txt
+git clone https://github.com/wuleiyuan/opencode-smart-model-selector.git
+cd opencode-smart-model-selector
 ```
 
-### 基本使用
+### 2. 配置 API（任何 API 都可以！）
 
 ```bash
-# 激活研究模式 (Gemini 3 Pro轮询)
-op -m
+# 环境变量方式（推荐）
+export GOOGLE_API_KEYS="你的google key"
+export DEEPSEEK_API_KEYS="你的deepseek key"
+export OPENROUTER_API_KEYS="你的openrouter key"
+# …想配多少配多少
+```
 
-# 激活编程模式 (Claude 3.5优先)
-op -c
+或创建 `~/.local/share/opencode/auth.json`：
 
-# 激活极速模式 (备用模型优先)
-op -f
+```json
+{
+  "google_api_key": "xxx",
+  "deepseek_api_key": "xxx",
+  "openai_api_key": "xxx"
+}
+```
 
-# 查看当前状态
-op current
+### 3. 运行
 
-# 智能任务选择
-op smart "分析股票数据"  # 自动选择编程模式
+```bash
+./op.sh "你的任务"
+```
+
+## 📖 典型场景
+
+### 场景1: 只有一个 API
+
+```bash
+export GOOGLE_API_KEYS="only-one-key"
+./op.sh "写个函数"
+```
+✅ 正常工作
+
+### 场景2: 有多个同类型 API
+
+```bash
+export GOOGLE_API_KEYS="key1 key2 key3"  # 3个Google Key轮换用
+./op.sh "写个函数"
+```
+✅ 负载均衡，避免单点限流
+
+### 场景3: 多种 API 混合
+
+```bash
+export GOOGLE_API_KEYS="google-key"
+export DEEPSEEK_API_KEYS="deepseek-key"  
+export OPENROUTER_API_KEYS="openrouter-key"
+./op.sh "写个函数"
+```
+✅ Google 优先 → 挂了用 DeepSeek → 再挂了用 OpenRouter
+
+### 场景4: 付费 + 免费
+
+```bash
+export GOOGLE_API_KEYS="paid-key"        # 付费主力
+export GOOGLE_FREE_API_KEYS="free-key"   # 免费备用
+./op.sh "写个函数"
+```
+✅ 付费优先 → 限额自动切免费
+
+## 🏗️ 系统架构
+
+```
+用户请求
+    │
+    ▼
+┌─────────────────────┐
+│   智能模型选择器     │
+│  分析任务类型/复杂度 │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│    API 调度引擎     │
+│                     │
+│  API1 → 成功 → 返回 │
+│    │               │
+│    └── 失败 → API2 │
+│           │         │
+│           └── 失败 → API3 │
+│                   │     │
+│                   └── ...│
+└─────────────────────┘
 ```
 
 ## 📁 项目结构
@@ -41,55 +136,36 @@ op smart "分析股票数据"  # 自动选择编程模式
 ```
 smart-model-selector/
 ├── smart_model_dispatcher.py  # 核心调度引擎
-├── api_config.json         # API密钥配置
-├── op.sh                  # 命令行接口
-├── requirements.txt          # Python依赖
-└── README.md             # 项目文档
+├── model_selector.py          # 智能模型选择
+├── daemon.py                 # 守护进程
+├── op.sh                    # 启动脚本
+└── README.md               # 本文档
 ```
 
-## 🔧 配置文件说明
+## 🔧 支持的 Provider（任何 API 都可以）
 
-### api_config.json 结构
-```json
-{
-  "api_keys": {
-    "gemini_pro_paid": [...],      # 5个Gemini 3 Pro API Key
-    "openai_claude": [...],      # Claude API Key
-    "deepseek": [...],           # DeepSeek API Key
-    "siliconflow": [...],        # 硅基流动 Key
-    "other_models": [...]       # 其他模型 Key
-  },
-  "model_selection": {
-    "strategy": "gemini_pro_priority"
-  }
-}
-```
+| Provider | 命令 | 说明 |
+|----------|------|------|
+| Google Gemini | google_api_key | 主力首选 |
+| Claude | anthropic_api_key | 代码/分析强 |
+| DeepSeek | deepseek_api_key | 性价比高 |
+| OpenRouter | openrouter_api_key | 万能备选 |
+| Kimi | kimi_api_key | 中文优化 |
+| 豆包 | doubao_api_key | 中文优化 |
+| 硅基流动 | siliconflow_api_key | 多模型 |
 
-## 🎮 支持的模式
+## ⚠️ 注意事项
 
-| 模式 | 命令 | 主要模型 | 用途 |
-|------|------|---------|------|
-| 研究 | `op -m` | Gemini 3 Pro | 深度分析、长文本处理 |
-| 编程 | `op -c` | Claude 3.5 | 代码生成、调试修复 |
-| 极速 | `op -f` | Groq/备用 | 快速响应、简单查询 |
-| 吞吐 | `op -w` | DeepSeek/豆包 | 大批量处理 |
-| 中文 | `op -cn` | 硅基流动/豆包 | 中文优化任务 |
+1. **需要自备 API**: 系统不提供 API Key，需要用户自己配置
+2. **安全存储**: API Key 存 `~/.local/share/openopenauth.json`，不写入配置文件
+3. **不修改 opencode.json**: 不会影响 OpenCode 官方配置
 
-## 🛡️ 故障处理
+## 📜 许可证
 
-系统具备多层故障转移机制：
-1. **Primary Pool故障** → 自动切换到Secondary Pool
-2. **Secondary Pool故障** → 自动切换到Emergency Pool (OpenRouter)
-3. **连接失败** → Pre-flight检查检测并跳过不可用API
-4. **429限流** → 自动进入10分钟冷静期
-
-## 📈 监控和统计
-
-- **实时健康检查**: 每次API调用前1.5秒超时检测
-- **使用统计**: 记录成功/失败次数、响应时间
-- **成本跟踪**: 不同模型的使用成本分析
-- **状态缓存**: API状态持久化，避免重复检测
+MIT
 
 ---
 
-**系统已达到商业级标准，可立即投入生产使用！** 🎉
+**主打智能切换模型。任何 API 都可以。**
+
+⭐️ Star: https://github.com/wuleiyuan/opencode-smart-model-selector
