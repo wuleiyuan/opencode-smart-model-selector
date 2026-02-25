@@ -198,7 +198,13 @@ show_help() {
     echo "════════════════════════════════════════════════════════════"
     echo "  📊 状态管理"
     echo "════════════════════════════════════════════════════════════"
-    echo ""
+    PW|    echo ""
+ WK|    echo "  op auto            恢复到智能模式 (清除手动指定)"
+ WK|    echo "  op reset           同上，恢复智能模式"
+ WK|    echo "  op version         显示版本信息"
+ WK|    echo ""
+ WK|    echo "  op current         显示当前配置"
+ WP|    echo "  op help            显示此帮助"
     echo "  op current         显示当前配置"
     echo "  op help            显示此帮助"
     echo ""
@@ -220,7 +226,7 @@ is_task_description() {
     fi
     # 如果是已知命令词
     case "$first_arg" in
-        "smart"|"-s"|"--smart"|"current"|"help"|"-h"|"--help"|"main"|"coding"|"fast"|"crawler"|"chinese"|"research"|"auto"|"reset"|"set")
+        "smart"|"-s"|"--smart"|"current"|"help"|"-h"|"--help"|"main"|"coding"|"fast"|"crawler"|"chinese"|"research"|"auto"|"reset"|"set"|"version"|"-v")
             return 1
             ;;
     esac
@@ -309,6 +315,9 @@ else:
     print('当前已是智能模式')
 " 2>/dev/null
             print_info "✅ 已恢复到智能模式"
+            ;;
+        "version"|"-v"|"--version")
+            "$PYTHON_CMD" "$SCRIPT_DIR/version.py"
             ;;
         "help"|"-h"|"--help")
             show_help

@@ -1,0 +1,60 @@
+"""
+OpenCode Smart Model Selector 版本管理模块
+
+版本号格式: MAJOR.MINOR.PATCH
+- MAJOR: 不兼容的 API 变更
+- MINOR: 向后兼容的新功能
+- PATCH: 向后兼容的 bug 修复
+"""
+
+__version__ = "2.0.0"
+__author__ = "OpenCode Team"
+__description__ = "智能模型调度系统"
+
+# 版本历史
+VERSION_HISTORY = {
+    "1.0.0": {
+        "date": "2025-01-01",
+        "description": "初始版本 - 智能模型选择 + 故障转移"
+    },
+    "2.0.0": {
+        "date": "2025-02-25", 
+        "description": """
+        重大更新:
+        - 手动指定模型 > 自动推荐优先级 (24h TTL, 连续3次失败自动切换)
+        - 添加 op auto/reset 命令恢复智能模式
+        - 长文本降级策略 (>8000 tokens 自动用免费模型)
+        - 测速记忆持久化 (latency_cache.json 热启动)
+        - JSON 配置容错机制 (自动备份回退)
+        - Bash 兼容 (auto_start.sh 支持 PROMPT_COMMAND)
+        - 版本管理模块 (version.py)
+        """
+    }
+}
+
+def get_version():
+    """获取当前版本号"""
+    return __version__
+
+def get_version_info():
+    """获取详细版本信息"""
+    return {
+        "version": __version__,
+        "author": __author__,
+        "description": __description__,
+        "history": VERSION_HISTORY
+    }
+
+def print_version():
+    """打印版本信息"""
+    print(f"OpenCode Smart Model Selector v{__version__}")
+    print(f"Author: {__author__}")
+    print()
+    print("版本历史:")
+    for ver, info in VERSION_HISTORY.items():
+        print(f"  v{ver} ({info['date']})")
+        for line in info['description'].strip().split('\n'):
+            print(f"    {line.strip()}")
+
+if __name__ == "__main__":
+    print_version()
