@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-智能模型调度引擎 v2.4 (Enhanced with Type Hints & Error Handling)
+智能模型调度引擎 V1.0
 核心功能：对接 api_config.json，自动清洗脏Key，实现动态路由
 Author: OpenCode Smart Model Dispatcher
 """

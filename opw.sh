@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# OpenCode 智能包装脚本 v2.2 (TUI Edition)
+# OpenCode 智能包装脚本 V1.0 (TUI Edition)
 # 核心特性：SSL 证书穿透 + 终端直启模式 + 智能模型调度
 
 # 颜色定义

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# OpenCode 智能模型调度系统 - op 命令 v2.4 (Secure & Portable)
+# OpenCode 智能模型调度系统 V1.0
 # 修复版 - 动态路径 + 代理沙箱 + venv 支持
 
 # [修复 1] 获取脚本所在目录的绝对路径
