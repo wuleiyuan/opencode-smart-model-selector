@@ -197,7 +197,46 @@ Primary API 故障 → 自动切换 Secondary API
 
 - 长文本 (>8000 tokens) 自动降级到免费模型
 - 免费模型优先使用
-- 任务复杂度评估选择合适模型
+#PZ|
+## 🔗 配套项目
+
+### Token Monitor - Token 使用监控
+
+企业级 Token 使用监控系统，配套 OpenCode Smart Model Selector 使用。
+
+| 特性 | 说明 |
+|------|------|
+| 📊 实时监控 | 追踪 Token 消耗，支持多模型对比 |
+| 🏢 多供应商 | 支持 Google、Anthropic、OpenAI 等 |
+| 📈 数据可视化 | 趋势图、饼图等图表展示 |
+| ⚠️ 智能告警 | 支持日限额、错误率告警 |
+
+**GitHub**: https://github.com/wuleiyuan/token-monitor
+
+**功能**:
+- 实时监控 API 调用量和 Token 消耗
+- 多模型对比分析
+- 使用趋势图表
+- 告警通知
+- 支持 Docker 部署
+
+**快速开始**:
+```bash
+# 克隆项目
+git clone https://github.com/wuleiyuan/token-monitor.git
+cd token-monitor
+
+# 配置环境
+cp .env.template .env
+
+# 启动服务
+pip install -r requirements.txt
+python enterprise_api_server.py
+```
+
+访问 http://localhost:8000，默认账户: `admin` / `admin123`
+
+---
 
 ## 🤝 贡献指南
 
