@@ -827,8 +827,9 @@ class SmartModelDispatcher:
             logger.warning(f"❓ {api.provider} 未知错误: {str(e)[:80]}")
             return False
 
-    def activate_profile(self, profile_name: str) -> bool:
-        # [优先级修复] 用户显式执行profile命令时清除标记，允许自动切换
+    # 用户显式指定模型 > profile 命令，但 profile 命令可以清除它
+    def _clear_user_specified_for_profile(self) -> None:
+        """profile 命令清除用户指定标记"""
         if self.is_user_specified_model():
             specified = ""
             try:
@@ -836,8 +837,12 @@ class SmartModelDispatcher:
                     specified = json.load(f).get("specified_model", "")
             except:
                 pass
-            logger.info(f"ℹ️ 检测到用户显式切换profile，清除指定模型: {specified}")
+            logger.info(f"ℹ️ 检测到用户切换 profile，清除指定模型: {specified}")
             self.clear_user_specified_model()
+
+    def activate_profile(self, profile_name: str) -> bool:
+        # profile 命令清除用户指定标记，允许自动切换
+        self._clear_user_specified_for_profile()
 
         try:
             profile = ModelProfile(profile_name)

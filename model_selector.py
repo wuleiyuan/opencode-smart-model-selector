@@ -521,7 +521,7 @@ class SmartModelSelector:
         if estimated_tokens > LONG_TEXT_THRESHOLD and task_type != TaskType.CODING:
             logger.info(f"📏 检测到长文本 ({estimated_tokens} tokens)，启用成本优化策略")
             # 优先选择免费长上下文模型
-            free_long_context = ["gemini-1.5-flash", "qwen2.5-72b-instruct"]
+            free_long_context = ["gemini-1.5-flash", "qwen-2.5-72b"]
             for model_id in free_long_context:
                 if model_id in self.MODELS and self.MODELS[model_id].available:
                     return self.MODELS[model_id], f"📏 长文本优化: {estimated_tokens} tokens > {LONG_TEXT_THRESHOLD}，自动降级到免费模型"
