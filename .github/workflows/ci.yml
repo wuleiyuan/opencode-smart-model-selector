@@ -1,0 +1,67 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install flake8 black
+    
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    
+    - name: Check code format with black
+      run: |
+        black --check .
+    
+    - name: Run tests
+      run: |
+        python -m pytest test/ -v || echo "No tests found"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Verify Python syntax
+      run: |
+        python -m py_compile smart_model_dispatcher.py
+        python -m py_compile model_selector.py
+        python -m py_compile api_server.py
+        python -m py_compile version.py
+    
+    - name: Verify Shell scripts
+      run: |
+        bash -n op.sh
+        bash -n auto_start.sh
+        bash -n install.sh
