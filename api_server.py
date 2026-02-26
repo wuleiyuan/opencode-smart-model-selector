@@ -11,10 +11,11 @@ OpenCode Smart Model Selector - API Server
 
 import json
 import logging
-import os
 import sys
-import argparse
 from pathlib import Path
+from typing import Dict, Any, Optional
+import requests
+
 from typing import Dict, Any, Optional
 
 # 添加项目根目录到 Python 路径
@@ -218,15 +219,24 @@ class APIServer:
             return self._call_openai(model, messages, temperature, max_tokens)
         elif provider == "deepseek":
             return self._call_deepseek(model, messages, temperature, max_tokens)
-        else:
-            # 默认使用 google
             return self._call_google(model, messages, temperature, max_tokens)
     
+    def _find_valid_key(self, provider: str) -> Optional[str]:
+        """查找指定提供商的有效 API Key"""
+        # 初始化系统
+        self.dispatcher.initialize_system()
+        
+        # 查找该 provider 的 key
+        for api in self.dispatcher.api_keys:
+            if api.provider == provider:
+                return api.key
+        
+        return None
+
     def _call_anthropic(self, model: str, messages: list, 
                         temperature: float, max_tokens: int) -> Dict[str, Any]:
         """调用 Anthropic API"""
-        # 查找可用的 Anthropic key
-        api_key = self.dispatcher._find_valid_key("anthropic")
+        api_key = self._find_valid_key("anthropic")
         if not api_key:
             raise Exception("No valid Anthropic API key available")
         
@@ -285,8 +295,7 @@ class APIServer:
     
     def _call_google(self, model: str, messages: list,
                      temperature: float, max_tokens: int) -> Dict[str, Any]:
-        """调用 Google Gemini API"""
-        api_key = self.dispatcher._find_valid_key("google")
+        api_key = self._find_valid_key("google")
         if not api_key:
             raise Exception("No valid Google API key available")
         
@@ -347,8 +356,7 @@ class APIServer:
     
     def _call_openai(self, model: str, messages: list,
                      temperature: float, max_tokens: int) -> Dict[str, Any]:
-        """调用 OpenAI API"""
-        api_key = self.dispatcher._find_valid_key("openai")
+        api_key = self._find_valid_key("openai")
         if not api_key:
             raise Exception("No valid OpenAI API key available")
         
@@ -374,8 +382,7 @@ class APIServer:
     
     def _call_deepseek(self, model: str, messages: list,
                        temperature: float, max_tokens: int) -> Dict[str, Any]:
-        """调用 DeepSeek API"""
-        api_key = self.dispatcher._find_valid_key("deepseek")
+        api_key = self._find_valid_key("deepseek")
         if not api_key:
             raise Exception("No valid DeepSeek API key available")
         
