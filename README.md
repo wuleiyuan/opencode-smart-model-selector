@@ -8,7 +8,11 @@
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
-**OpenCode 智能模型调度系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+#JX|**OpenCode 智能模型调度系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+
+> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/Claude/GPT/Gemini 多模型支持
+
+**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, Smart Selector, Token Optimization, API Failover, Multi-Provider
 
 ## ✨ 核心特性
 
