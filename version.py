@@ -7,7 +7,7 @@ OpenCode Smart Model Selector 版本管理模块
 - PATCH: 向后兼容的 bug 修复
 """
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __author__ = "OpenCode Team"
 __description__ = "智能模型调度系统"
 
@@ -28,6 +28,15 @@ VERSION_HISTORY = {
         - JSON 配置容错机制 (自动备份回退)
         - Bash 兼容 (auto_start.sh 支持 PROMPT_COMMAND)
         - 版本管理模块 (version.py)
+    },
+    "2.1.0": {
+        "date": "2026-02-26",
+        "description": """
+        新增功能:
+        - API Server 模块 (api_server.py) - OpenAI 兼容接口
+        - 新增 op api start/stop/restart 命令
+        - 支持作为 Openclaw 模型供应商
+        - 支持 /v1/chat/completions 和 /v1/models 端点
         """
     }
 }
