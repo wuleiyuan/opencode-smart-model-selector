@@ -100,9 +100,77 @@ smart-model-selector/
 ├── version.py                  # 版本管理
 ├── op.sh                      # 命令行工具
 ├── auto_start.sh              # 自动启动脚本
-├── api_config.json            # API 配置模板
-└── README.md                  # 项目文档
 ```
+
+## 🌐 API Server (OpenAI 兼容接口)
+
+支持启动本地 API Server，提供 OpenAI 兼容接口，可供 **Openclaw** 等 AI 工具调用。
+
+### 快速开始
+
+```bash
+# 安装 Flask 依赖
+pip install -r requirements.txt
+
+# 启动 API Server
+op api start
+# 或
+python api_server.py --port 8080
+```
+
+### Openclaw 配置
+
+在 Openclaw 中配置使用本服务：
+
+```json
+{
+  "models": {
+    "providers": {
+      "smart-selector": {
+        "baseUrl": "http://localhost:8080/v1",
+        "apiKey": "dummy",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "auto",
+            "name": "Smart Selector"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+### API 端点
+
+| 端点 | 说明 |
+|------|------|
+| `POST /v1/chat/completions` | 聊天完成 |
+| `GET /v1/models` | 获取可用模型 |
+| `GET /health` | 健康检查 |
+
+### 使用示例
+
+```bash
+# 智能选择模型
+curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "auto",
+    "messages": [{"role": "user", "content": "写一个Python排序算法"}]
+  }'
+
+# 指定模型
+curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gemini-1.5-pro",
+    "messages": [{"role": "user", "content": "写一个Python排序算法"}]
+  }'
+```
+
+---
 
 ## 📈 功能详解
 

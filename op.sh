@@ -314,7 +314,29 @@ if auth_config.exists():
 else:
     print('当前已是智能模式')
 " 2>/dev/null
-            print_info "✅ 已恢复到智能模式"
+            ;;
+        "api")
+            shift
+            case "${1:-}" in
+                "start")
+                    print_info "启动 API Server..."
+                    "$PYTHON_CMD" "$SCRIPT_DIR/api_server.py" --port 8080 &
+                    print_info "✅ API Server 已启动 (http://localhost:8080)"
+                    ;;
+                "stop")
+                    pkill -f "api_server.py" 2>/dev/null
+                    print_info "✅ API Server 已停止"
+                    ;;
+                "restart")
+                    pkill -f "api_server.py" 2>/dev/null
+                    sleep 1
+                    "$PYTHON_CMD" "$SCRIPT_DIR/api_server.py" --port 8080 &
+                    print_info "✅ API Server 已重启"
+                    ;;
+                *)
+                    print_info "API Server: op api [start|stop|restart]"
+                    ;;
+            esac
             ;;
         "version"|"-v"|"--version")
             "$PYTHON_CMD" "$SCRIPT_DIR/version.py"
