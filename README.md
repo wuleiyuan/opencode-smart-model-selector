@@ -1,95 +1,129 @@
-# 🧠 OpenCode 智能模型调度系统 v2.0.0
+# 🧠 OpenCode Smart Model Selector
+
+[![Version](https://img.shields.io/badge/Version-v2.0.0-blue.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/releases)
+[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/wuleiyuan/opencode-smart-model-selector?style=social)](https://github.com/wuleiyuan/opencode-smart-model-selector/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/wuleiyuan/opencode-smart-model-selector/main.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/commits/main)
+
+> 🇨🇳 中文 | [English](./README_EN.md)
+
+**OpenCode 智能模型调度系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
 
 ## ✨ 核心特性
 
-- **5个Gemini 3 Pro轮询**: 智能负载均衡，避免单点限流
-- **多Provider支持**: Google、Anthropic、DeepSeek、SiliconFlow、MiniMax等
-- **静默自愈**: API故障自动切换，用户无感知
-- **冷静期管理**: 429限流智能冷却
-- **紧急熔断**: OpenRouter终极备选，永不宕机
-- **一键切换**: 简单命令激活不同模式
+| 特性 | 说明 |
+|------|------|
+| 🤖 **智能路由** | 根据任务类型自动选择最优模型 (Coding/Research/Fast) |
+| ⚡ **负载均衡** | 多 API Key 轮询，避免单点限流 |
+| 🛡️ **故障转移** | API 故障自动切换，用户无感知 |
+| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
+| ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
+| 🔄 **热启动** | 测速记忆持久化，重启后无需重新探测网络 |
+| 🖥️ **多 Shell 支持** | 支持 Zsh 和 Bash 自动启动 |
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 安装
+
 ```bash
 cd /path/to/smart-model-selector
 pip install -r requirements.txt
 ```
 
+### 配置 API Key
+
+在 `auth.json` 中配置你的 API Key：
+
+```json
+{
+  "google_api_key": "your-google-api-key",
+  "anthropic_api_key": "your-anthropic-key",
+  "deepseek_api_key": "your-deepseek-key"
+}
+```
+
 ### 基本使用
 
 ```bash
-# 激活研究模式 (Gemini 3 Pro轮询)
-op -m
+# 🎯 全自动模式 (推荐) - 直接输入任务描述
+op 帮我写一个 Python 排序算法
+op 分析这段代码的性能问题
+op 翻译这段英文到中文
 
-# 激活编程模式 (Claude 3.5优先)
-op -c
+# 📋 手动模式 - 显式指定
+op -m              # 研究模式 (Google Gemini Pro)
+op -c              # 编程模式 (Claude 3.5/3.7)
+op -f              # 极速模式 (免费模型优先)
+op -w              # 吞吐模式 (DeepSeek/豆包)
+op -cn             # 中文模式 (硅基流动/MiniMax)
 
-# 激活极速模式 (备用模型优先)
-op -f
-
-# 查看当前状态
-op current
-
-# 智能任务选择
-op smart "分析股票数据"  # 自动选择编程模式
+# 🔧 高级功能
+op set google/gemini-2.0-pro  # 指定模型 (24h 有效)
+op auto                       # 恢复到智能模式
+op version                    # 查看版本信息
+op current                   # 显示当前配置
 ```
 
-## 📁 项目结构
+## 📊 支持的模型
+
+| Provider | 模型 | 特点 |
+|----------|------|------|
+| Google Gemini | 2.0 Pro / 1.5 Pro | 高性能、长上下文 |
+| Anthropic Claude | 3.5/3.7 Sonnet | 编程王者、推理专家 |
+| DeepSeek | Chat / Coder | 性价比高、中文优化 |
+| SiliconFlow | Qwen/DeepSeek 免费 | 免费额度多 |
+| MiniMax | Chat | 中文场景优化 |
+
+## 🏗️ 项目架构
 
 ```
 smart-model-selector/
 ├── smart_model_dispatcher.py  # 核心调度引擎
-├── api_config.json         # API密钥配置
-├── op.sh                  # 命令行接口
-├── requirements.txt          # Python依赖
-└── README.md             # 项目文档
+├── model_selector.py           # 任务分析模型选择
+├── daemon.py                   # 后台守护进程
+├── version.py                  # 版本管理
+├── op.sh                      # 命令行工具
+├── auto_start.sh              # 自动启动脚本
+├── api_config.json            # API 配置模板
+└── README.md                  # 项目文档
 ```
 
-## 🔧 配置文件说明
+## 📈 功能详解
 
-### api_config.json 结构
-```json
-{
-  "api_keys": {
-    "gemini_pro_paid": [...],      # 5个Gemini 3 Pro API Key
-    "openai_claude": [...],      # Claude API Key
-    "deepseek": [...],           # DeepSeek API Key
-    "siliconflow": [...],        # 硅基流动 Key
-    "other_models": [...]       # 其他模型 Key
-  },
-  "model_selection": {
-    "strategy": "gemini_pro_priority"
-  }
-}
+### 智能模型选择
+
+系统会根据任务描述自动分析并选择最优模型：
+
+```python
+# 任务分析 -> 模型匹配
+"写代码" -> Coding 模式 -> Claude
+"分析数据" -> Research 模式 -> Gemini Pro
+"翻译" -> Fast 模式 -> 免费模型
 ```
 
-## 🎮 支持的模式
+### 故障处理机制
 
-| 模式 | 命令 | 主要模型 | 用途 |
-|------|------|---------|------|
-| 研究 | `op -m` | Gemini 3 Pro | 深度分析、长文本处理 |
-| 编程 | `op -c` | Claude 3.5 | 代码生成、调试修复 |
-| 极速 | `op -f` | Groq/备用 | 快速响应、简单查询 |
-| 吞吐 | `op -w` | DeepSeek/豆包 | 大批量处理 |
-| 中文 | `op -cn` | 硅基流动/豆包 | 中文优化任务 |
+```
+Primary API 故障 → 自动切换 Secondary API
+全部故障 → 切换 Emergency Pool (OpenRouter)
+限流 429 → 进入冷静期 (10分钟)
+```
 
-## 🛡️ 故障处理
+### 成本优化策略
 
-系统具备多层故障转移机制：
-1. **Primary Pool故障** → 自动切换到Secondary Pool
-2. **Secondary Pool故障** → 自动切换到Emergency Pool (OpenRouter)
-3. **连接失败** → Pre-flight检查检测并跳过不可用API
-4. **429限流** → 自动进入10分钟冷静期
+- 长文本 (>8000 tokens) 自动降级到免费模型
+- 免费模型优先使用
+- 任务复杂度评估选择合适模型
 
-## 📈 监控和统计
+## 🤝 贡献指南
 
-- **实时健康检查**: 每次API调用前1.5秒超时检测
-- **使用统计**: 记录成功/失败次数、响应时间
-- **成本跟踪**: 不同模型的使用成本分析
-- **状态缓存**: API状态持久化，避免重复检测
+欢迎提交 Issue 和 PR！
+
+## 📄 License
+
+MIT License - 查看 [LICENSE](LICENSE) 了解详情
 
 ---
 
-**系统已达到商业级标准，可立即投入生产使用！** 🎉
+**⭐ 如果这个项目对你有帮助，请点个 Star 支持一下！**
