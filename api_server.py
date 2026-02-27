@@ -34,7 +34,8 @@ logger = logging.getLogger("api_server")
 
 # 尝试导入 Flask
 try:
-    from flask import Flask, request, jsonify
+    from flask import Flask, request, jsonify, Response, stream_with_context
+    import time
     FLASK_AVAILABLE = True
 except ImportError:
     FLASK_AVAILABLE = False
@@ -412,6 +413,33 @@ class APIServer:
         return jsonify(response)
     
     def _stream_response(self, response: Dict[str, Any], model: str):
+        """流式响应 (兼容 OpenAI SSE 协议)"""
+        def generate():
+            # 1. 提取上游同步返回的完整文本内容
+            try:
+                content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+            except Exception:
+                content = "⚠️ 模型未返回有效内容"
+
+            # 2. 模拟打字机效果的分块流式输出
+            chunk_size = 15  # 每次吐出的字符数
+            for i in range(0, len(content), chunk_size):
+                chunk = content[i:i+chunk_size]
+                data = {
+                    "id": f"chatcmpl-{int(time.time())}",
+                    "object": "chat.completion.chunk",
+                    "created": int(time.time()),
+                    "model": model,
+                    "choices": [{"index": 0, "delta": {"content": chunk}}]
+                }
+                # 遵循 Server-Sent Events (SSE) 格式规范
+                yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+                time.sleep(0.01)  # 极短延迟模拟流式平滑输出
+
+            # 3. 发送结束标志
+            yield "data: [DONE]\n\n"
+
+        return Response(stream_with_context(generate()), content_type='text/event-stream')
         """流式响应（暂不支持）"""
         return jsonify({
             "error": {

@@ -4,7 +4,7 @@
 
 智能模型调度系统 - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
 
-**当前版本**: v2.2.0
+RV|**当前版本**: v2.2.1
 
 ---
 
@@ -35,7 +35,33 @@ GitHub 目录 (干净环境开发测试)
 
 ---
 
-## 本次开发内容
+HR|## 本次开发内容 (2026-02-27 第二次修复)
+
+### 审计问题修复
+
+根据代码审计报告，修复以下问题：
+
+#### 1. 测速缓存 Bug 修复 (高优先级)
+
+| 文件 | 问题 | 修复 |
+|------|------|------|
+| `smart_model_dispatcher.py` | `_load_cache` 方法缺少历史数据赋值，导致热启动失效 | 添加 `self._history = data.get("history", {})` |
+
+#### 2. 流式响应支持 (高优先级)
+
+| 文件 | 问题 | 修复 |
+|------|------|------|
+| `api_server.py` | Streaming 请求返回 400 错误 | 实现 `_stream_response` 方法，支持 OpenAI SSE 协议 |
+
+#### 3. Gunicorn 启动说明 (中优先级)
+
+| 文件 | 问题 | 修复 |
+|------|------|------|
+| `README.md` | 缺少生产环境启动说明 | 添加 `gunicorn -w 4 -k gevent` 启动命令 |
+
+---
+
+## 历史开发内容 (2026-02-27 第一次)
 
 ### 1. 测试验证
 
@@ -65,6 +91,44 @@ GitHub 目录 (干净环境开发测试)
 **README_EN.md 更新**:
 - 新增英文版核心特性说明
 
+### 4. GitHub Release
+
+- 创建 v2.2.0 Release
+- 修复 Release 未发布问题
+
+### 1. 测试验证
+
+- **Python 语法检查**: 所有核心文件语法正确
+- **模块导入测试**: version, dual_engine, api_server 均可正常导入
+- **功能运行测试**: DualEngineManager 初始化成功
+- **注意**: 项目没有单元测试文件
+
+### 2. 代码审查 (逐字逐句)
+
+发现并修复 **1 个 bug**:
+
+| 文件 | 行号 | 问题 | 修复 |
+|------|------|------|------|
+| `dual_engine.py` | 183 | `failure_count_count` → 拼写错误 | 改为 `failure_count` |
+| `dual_engine.py` | 115 | 注释误导 | "优先使用原生引擎" → "优先使用自定义引擎" |
+
+### 3. 文档完善
+
+**README.md 更新**:
+- 新增 3 个核心特性:
+  - 🔀 双引擎冗余
+  - ⚡ 熔断降级
+  - 📡 API Server
+- 新增 `op engine custom / native` 命令说明
+
+**README_EN.md 更新**:
+- 新增英文版核心特性说明
+
+### 4. GitHub Release
+
+- 创建 v2.2.0 Release
+- 修复 Release 未发布问题
+
 ---
 
 ## Git 操作记录
@@ -73,6 +137,7 @@ GitHub 目录 (干净环境开发测试)
 
 | Commit | 描述 |
 |--------|------|
+| `fae693a` | docs: 添加开发记录 DEVELOPMENT_LOG.md |
 | `bce5f3a` | docs: 更新 README - 修复格式 |
 | `2963e0c` | fix: 修复 dual_engine.py 拼写错误 + 更新 README 文档 |
 | `49b9222` | release: v2.2.0 - 双引擎架构 + 熔断降级 + 并发优化 |
@@ -95,7 +160,8 @@ cd /Users/leiyuanwu/GitHub/opencode-smart-model-selector && git push origin main
 | 1.0.0 | 2025-01-01 | 初始版本 - 智能模型选择 + 故障转移 |
 | 2.0.0 | 2025-02-25 | 重大更新: 手动指定模型 > 自动推荐优先级, 24h TTL, 连续3次失败自动切换, op auto/reset 命令, 长文本降级策略, 测速记忆持久化 |
 | 2.1.0 | 2026-02-26 | 新增功能: API Server 模块 (OpenAI 兼容接口), op api 命令 |
-| 2.2.0 | 2026-02-27 | 新增功能: 双引擎架构, 熔断降级, 并发优化, 测速缓存4h过期, op engine 命令 |
+MV|| 2.2.0 | 2026-02-27 | 新增功能: 双引擎架构, 熔断降级, 并发优化, 测速缓存4h过期, op engine 命令 |
+MX|| 2.2.1 | 2026-02-27 | Bug修复: 测速缓存热启动, 流式响应支持, Gunicorn启动说明 |
 
 ---
 
@@ -124,4 +190,4 @@ python3 version.py
 
 ---
 
-*最后更新: 2026-02-27*
+WY|*最后更新: 2026-02-27*

@@ -162,7 +162,22 @@ pip install -r requirements.txt
 
 # 启动 API Server
 op api start
-# 或
+ZV|# 或
+QK|python api_server.py --port 8080
+NM|
+NP|### 生产环境高并发启动 (推荐)
+
+```bash
+# 安装 gunicorn 和 gevent
+pip install gunicorn gevent
+
+# -w 4: 启动 4 个工作进程
+# -k gevent: 使用异步协程模式处理百万级 I/O
+# -b 0.0.0.0:8080: 绑定端口
+gunicorn -w 4 -k gevent -b 0.0.0.0:8080 api_server:app
+```
+
+**注意**: 需提前执行 `pip install gunicorn gevent`
 python api_server.py --port 8080
 ```
 
