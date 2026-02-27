@@ -19,10 +19,7 @@
 | 🛡️ **Failover** | Automatic API failover, seamless for users |
 | 💰 **Cost Optimization** | Long text auto-downgrade, free models prioritized |
 | ⏱️ **Speed Test** | Latency-based routing, remembers response times |
-RP|| 📊 **Usage Tracking** | Token usage monitoring and statistics |
-QM|| 🔀 **Dual Engine** | Custom + Native engine redundancy |
-JT|| ⚡ **Circuit Breaker** | Auto-fallback after 3 failures |
-XZ|| 📡 **API Server** | OpenAI-compatible API for Openclaw integration |
+| 📊 **Usage Tracking** | Token usage monitoring and statistics |
 
 ## 🚀 Quick Start
 
