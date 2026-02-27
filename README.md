@@ -103,7 +103,51 @@ smart-model-selector/
 ├── daemon.py                   # 后台守护进程
 ├── version.py                  # 版本管理
 ├── op.sh                      # 命令行工具
-├── auto_start.sh              # 自动启动脚本
+```
+
+## 🔗 OpenCode 集成
+
+可以将 smart-model-selector 集成到 OpenCode CLI 作为模型选择器。
+
+### 方式 1: 使用 model-selector.sh（推荐）
+
+1. 复制脚本到 OpenCode 配置目录：
+```bash
+cp model-selector.sh ~/.opencode/model-selector.sh
+chmod +x ~/.opencode/model-selector.sh
+```
+
+2. 配置环境变量：
+```bash
+# 在 .zshrc 或 .bashrc 中添加
+export OPENCODE_MODEL_SELECTOR="$HOME/.opencode/model-selector.sh"
+```
+
+3. 重启终端后生效
+
+### 方式 2: 直接使用 op 命令
+
+```bash
+# 安装
+cd smart-model-selector
+pip install -r requirements.txt
+chmod +x op.sh
+
+# 使用
+op 帮我写一个Python排序算法
+op set google/gemini-2.0-pro  # 手动指定模型
+op auto  # 恢复智能模式
+```
+
+### 工作原理
+
+```
+OpenCode 调用 model-selector.sh
+        ↓
+调用 smart-model-selector (Python)
+        ↓
+成功 → 返回智能选择的模型
+失败 → 返回默认模型 (gemini-1.5-flash)
 ```
 
 ## 🌐 API Server (OpenAI 兼容接口)
