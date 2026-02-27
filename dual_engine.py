@@ -106,13 +106,15 @@ class DualEngineManager:
     
     def select(self, task_description: str) -> Tuple[str, str]:
         """
+        带冗余的模型选择：自定义引擎为主，原生引擎为备
+        
         带冗余的模型选择
         
         Returns:
             (model_id, engine_info)
         """
         
-        # 优先使用原生引擎
+        # 优先使用自定义引擎
         if self.current_engine == EngineType.NATIVE:
             native_model = self._get_native_model()
             return native_model, "[Engine: Native]"
@@ -180,7 +182,7 @@ def main():
     if args.status:
         status = manager.get_status()
         print(f"当前引擎: {status['current_engine']}")
-        print(f"失败次数: {status['failure_count_count']}")
+        print(f"失败次数: {status['failure_count']}")
         print(f"熔断状态: {'激活' if status['circuit_breaker_active'] else '正常'}")
     
     elif args.engine:
