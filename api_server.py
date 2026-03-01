@@ -24,6 +24,8 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from smart_model_dispatcher import SmartModelDispatcher
 from model_selector import SmartModelSelector
+# OpenClaw 整合模块
+from openclaw_selector import OpenClawModelSelector, PerformanceTracker
 
 # 配置日志
 logging.basicConfig(
@@ -53,6 +55,9 @@ class APIServer:
         # 初始化调度器
         self.dispatcher = SmartModelDispatcher()
         self.model_selector = SmartModelSelector()
+        # OpenClaw 整合
+        self.openclaw_selector = OpenClawModelSelector()
+        self.performance_tracker = PerformanceTracker()
         
         # 注册路由
         self._register_routes()
@@ -126,7 +131,11 @@ class APIServer:
                 # 选择模型
                 if model == "auto" or model == "smart-select":
                     # 智能选择
-                    selected_model, reason = self.model_selector.select(task_description)
+                    # OpenClaw 混合策略选择 (任务匹配 + 性能驱动)
+                    model_id, reason = self.openclaw_selector.select(task_description)
+                    provider = self._get_provider_from_model(model_id)
+                    logger.info(f"[OpenClaw] 智能选择: {model_id} ({provider}) - {reason}")
+                    # 原选择逻辑已由 OpenClaw 选择器替代
                     model_id = selected_model.id
                     provider = selected_model.provider
                     logger.info(f"智能选择: {model_id} ({provider}) - {reason}")
