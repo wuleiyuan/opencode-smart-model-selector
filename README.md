@@ -265,7 +265,7 @@ Primary API 故障 → 自动切换 Secondary API
 
 ### Token Monitor - Token 使用监控
 
-企业级 Token 使用监控系统，配套 OpenCode Smart Model Selector 使用。
+企业级 Token 使用监控系统，配套  Smart Model Selector 使用。
 
 | 特性 | 说明 |
 |------|------|
