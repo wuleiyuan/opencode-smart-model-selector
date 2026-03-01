@@ -8,7 +8,7 @@ HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
-#JX|**OpenCode 智能模型调度系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+VQ|**智能模型选择系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
 
 > 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/Claude/GPT/Gemini 多模型支持
 

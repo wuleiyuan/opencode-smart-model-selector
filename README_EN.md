@@ -8,7 +8,7 @@ YB|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > English | [中文](./README.md)
 
-**OpenCode Smart Model Selector** - Automatically selects the optimal AI model based on task type, supports multi-provider load balancing, automatic failover, and cost optimization.
+MZ|**Smart Model Selector** - Automatically selects the optimal AI model based on task type, supports multi-provider load balancing, automatic failover, and cost optimization.
 
 ## ✨ Core Features
 
