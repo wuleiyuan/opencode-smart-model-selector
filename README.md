@@ -8,11 +8,11 @@ HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
-VQ|**智能模型选择系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+SS|**智能模型选择系统** - 兼容 OpenCode / OpenClaw 的 AI 模型自动选择工具，支持任务类型识别、性能监控、动态路由，为 AI 编码助手提供最优模型决策。
 
-> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/Claude/GPT/Gemini 多模型支持
+KX|> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/OpenClaw/Cursor 多平台支持
 
-**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, Smart Selector, Token Optimization, API Failover, Multi-Provider
+KB|**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, OpenClaw, Cursor, Smart Selector, Token Optimization, API Failover, Multi-Provider, Model Selection, AI Coding Assistant, Code Generation
 
 ## ✨ 核心特性
 
@@ -105,7 +105,11 @@ smart-model-selector/
 ├── op.sh                      # 命令行工具
 ```
 
-## 🔗 OpenCode 集成
+BV|## 🔗 OpenCode / OpenClaw 集成
+
+BP|可以将 smart-model-selector 集成到 OpenCode、OpenClaw、Cursor 等 AI 编码助手作为模型选择器。
+
+### OpenCode 集成
 
 可以将 smart-model-selector 集成到 OpenCode CLI 作为模型选择器。
 

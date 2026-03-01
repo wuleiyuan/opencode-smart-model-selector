@@ -8,11 +8,11 @@ YB|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > English | [中文](./README.md)
 
-MZ|**Smart Model Selector** - Automatically selects the optimal AI model based on task type, supports multi-provider load balancing, automatic failover, and cost optimization.
+MW|**Smart Model Selector** - AI model auto-selection tool compatible with OpenCode, OpenClaw, and Cursor. Supports task-type recognition, performance monitoring, and dynamic routing for optimal AI coding assistant model decisions.
 
 ## ✨ Core Features
 
-| Feature | Description |
+RJ|**Keywords**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, OpenClaw, Cursor, Smart Selector, Token Optimization, API Failover, Multi-Provider, Model Selection, AI Coding Assistant
 |---------|-------------|
 | 🤖 **Smart Routing** | Auto-select optimal model based on task type (Coding/Research/Fast) |
 | ⚡ **Load Balancing** | Multiple API keys rotation, prevents rate limits |
