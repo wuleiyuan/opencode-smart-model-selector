@@ -13,7 +13,7 @@ RV|**当前版本**: v2.2.1
 | 目录 | 用途 |
 |------|------|
 | `/Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector/` | **本地自用工作目录** - 保留隐私配置 (api_config.json 含密钥) |
-| `/Users/leiyuanwu/GitHub/opencode-smart-model-selector/` | **GitHub 同步目录** - 干净环境开发测试，验证后同步 |
+| `/Users/leiyuanwu/GitHub/smart-model-selector/` | **GitHub 同步目录** - 干净环境开发测试，验证后同步 |
 
 ### 工作流程 (重要)
 
@@ -146,9 +146,9 @@ HR|## 本次开发内容 (2026-02-27 第二次修复)
 
 ```bash
 # 同时同步到本地目录 + 推送到 GitHub
-rsync -av --exclude='.git' --exclude='__pycache__' --exclude='*.egg-info' --exclude='dist' --exclude='api_config.json' /Users/leiyuanwu/GitHub/opencode-smart-model-selector/ /Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector/
+rsync -av --exclude='.git' --exclude='__pycache__' --exclude='*.egg-info' --exclude='dist' --exclude='api_config.json' /Users/leiyuanwu/GitHub/smart-model-selector/ /Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector/
 
-cd /Users/leiyuanwu/GitHub/opencode-smart-model-selector && git push origin main
+cd /Users/leiyuanwu/GitHub/smart-model-selector && git push origin main
 ```
 
 ---
@@ -176,7 +176,7 @@ MX|| 2.2.1 | 2026-02-27 | Bug修复: 测速缓存热启动, 流式响应支持, 
 
 ```bash
 # 进入 GitHub 目录
-cd /Users/leiyuanwu/GitHub/opencode-smart-model-selector
+cd /Users/leiyuanwu/GitHub/smart-model-selector
 
 # 进入本地工作目录
 cd /Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector

@@ -1,10 +1,10 @@
 JT|# 🧠 Smart Model Selector
 
-HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/releases)
+HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://github.com/wuleiyuan/smart-model-selector/releases)
 [![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/wuleiyuan/opencode-smart-model-selector?style=social)](https://github.com/wuleiyuan/opencode-smart-model-selector/stargazers)
-[![Last Commit](https://img.shields.io/github/last-commit/wuleiyuan/opencode-smart-model-selector/main.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/commits/main)
+[![Stars](https://img.shields.io/github/stars/wuleiyuan/smart-model-selector?style=social)](https://github.com/wuleiyuan/smart-model-selector/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/wuleiyuan/smart-model-selector/main.svg)](https://github.com/wuleiyuan/smart-model-selector/commits/main)
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
