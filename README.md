@@ -8,7 +8,7 @@ HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
-SS|**智能模型选择系统** - 兼容 OpenCode / OpenClaw 的 AI 模型自动选择工具，支持任务类型识别、性能监控、动态路由，为 AI 编码助手提供最优模型决策。
+JV|SS|**智能模型选择系统** - 兼容 OpenCode / OpenClaw 的 AI 模型自动选择工具，**支持多个免费 API 智能轮换**，无需付费即可享受最优 AI 模型体验。
 
 KX|> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/OpenClaw/Cursor 多平台支持
 
@@ -21,7 +21,10 @@ KB|**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT
 | 🤖 **智能路由** | 根据任务类型自动选择最优模型 (Coding/Research/Fast) |
 | ⚡ **负载均衡** | 多 API Key 轮询，避免单点限流 |
 | 🛡️ **故障转移** | API 故障自动切换，用户无感知 |
-| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
+QS|| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
+ZW|| 🆓 **免费 API 轮换** | 多个免费 API 智能轮换，自动选择最优 |
+QM|| 🔀 **多 Provider 支持** | Google/Anthropic/OpenAI/DeepSeek 自由切换 |
+JR|| ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
 | ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
 | 🔄 **热启动** | 测速记忆持久化，重启后无需重新探测网络 |
 | 🖥️ **多 Shell 支持** | 支持 Zsh 和 Bash 自动启动 |
@@ -84,7 +87,22 @@ op -cn             # 中文模式 (硅基流动/MiniMax)
 - **24h 过期**: 手动指定的模型 24 小时后自动失效，恢复智能模式
 - **连续失败**: 连续 3 次调用失败后自动清除，恢复智能模式
 
-## 📊 支持的模型
+RV|## 🆓 支持的免费模型
+
+| Provider | 模型 | 特点 | 价格 |
+|----------|------|------|------|
+| Google Gemini | 2.0 Flash | 高性能、多模态 | 🆓 免费 |
+| DeepSeek | Chat | 编程能力强 | 🆓 免费 |
+| SiliconFlow | Qwen/DeepSeek | 免费额度多 | 🆓 免费 |
+| MiniMax | Chat | 中文优化 | 🆓 免费 |
+
+## 💎 付费模型 (可选)
+
+| Provider | 模型 | 特点 |
+|----------|------|------|
+| Anthropic Claude | 3.5/3.7 Sonnet | 编程王者、推理专家 |
+| OpenAI | GPT-4o | 均衡全能 |
+| Google Gemini | 2.0 Pro | 高性能、长上下文 |
 
 | Provider | 模型 | 特点 |
 |----------|------|------|
@@ -105,7 +123,19 @@ smart-model-selector/
 ├── op.sh                      # 命令行工具
 ```
 
-BV|## 🔗 OpenCode / OpenClaw 集成
+JX|BV|## 🔗 OpenCode / OpenClaw / Cursor 集成
+
+BP|可以将 smart-model-selector 集成到 OpenCode、OpenClaw、Cursor 等 AI 编码助手作为模型选择器。
+
+### 为什么需要智能模型选择？
+
+- **OpenCode**: 开源 AI 编码助手，支持多种大模型
+- **OpenClaw**: 个人 AI 助手，支持多渠道接入
+- **Cursor**: AI 增强版 VS Code
+
+smart-model-selector 可以根据任务类型自动选择最优模型，提升开发效率。
+
+### OpenCode 集成
 
 BP|可以将 smart-model-selector 集成到 OpenCode、OpenClaw、Cursor 等 AI 编码助手作为模型选择器。
 

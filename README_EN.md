@@ -8,13 +8,18 @@ YB|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > English | [中文](./README.md)
 
-MW|**Smart Model Selector** - AI model auto-selection tool compatible with OpenCode, OpenClaw, and Cursor. Supports task-type recognition, performance monitoring, and dynamic routing for optimal AI coding assistant model decisions.
+ZB|MW|**Smart Model Selector** - AI model auto-selection tool compatible with OpenCode, OpenClaw, and Cursor. **Supports multiple free API rotation**, no payment required to enjoy the best AI model experience.
 
 ## ✨ Core Features
 
 RJ|**Keywords**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, OpenClaw, Cursor, Smart Selector, Token Optimization, API Failover, Multi-Provider, Model Selection, AI Coding Assistant
 |---------|-------------|
-| 🤖 **Smart Routing** | Auto-select optimal model based on task type (Coding/Research/Fast) |
+NX|| 🤖 **Smart Routing** | Auto-select optimal model based on task type (Coding/Research/Fast) |
+KM|| ⚡ **Load Balancing** | Multiple API keys rotation, prevents rate limits |
+KV|| 🛡️ **Failover** | Automatic API failover, seamless for users |
+NT|| 🆓 **Free API Rotation** | Multiple free APIs smart rotation, auto-select best |
+MY|| 💰 **Cost Optimization** | Long text auto-downgrade, free models prioritized |
+RP|| ⏱️ **Speed Test** | Latency-based routing, remembers response times |
 | ⚡ **Load Balancing** | Multiple API keys rotation, prevents rate limits |
 | 🛡️ **Failover** | Automatic API failover, seamless for users |
 | 💰 **Cost Optimization** | Long text auto-downgrade, free models prioritized |
@@ -100,7 +105,22 @@ Manual Spec (op set) > Auto Analyze > Manual Mode > Smart Reset
 - **24h Expiry**: Manual spec expires after 24 hours
 - **3 Failures**: Auto-clears after 3 consecutive failures
 
-## 📊 Supported Models
+SH|## 🆓 Supported Free Models
+
+| Provider | Models | Features | Price |
+|----------|--------|----------|-------|
+| Google Gemini | 2.0 Flash | High performance, multimodal | 🆓 Free |
+| DeepSeek | Chat | Strong coding ability | 🆓 Free |
+| SiliconFlow | Qwen/DeepSeek | Free credits | 🆓 Free |
+| MiniMax | Chat | Chinese optimization | 🆓 Free |
+
+## 💎 Premium Models (Optional)
+
+| Provider | Models | Features |
+|----------|--------|----------|
+| Anthropic Claude | 3.5/3.7 Sonnet | Coding king, reasoning expert |
+| OpenAI | GPT-4o | Balanced |
+| Google Gemini | 2.0 Pro | High performance, long context |
 
 | Provider | Models | Features |
 |----------|--------|----------|
