@@ -1,10 +1,10 @@
-# OpenCode Smart Model Selector 开发记录
+WZ|# Smart Model Selector 开发记录
 
 ## 项目概述
 
-智能模型调度系统 - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+NW|智能模型选择系统 - 兼容 OpenCode/OpenClaw，支持多个免费 API 智能轮换，无需付费即可享受最优 AI 模型体验。
 
-RV|**当前版本**: v2.2.1
+VY|RV|**当前版本**: v3.0.0
 
 ---
 
@@ -33,7 +33,40 @@ GitHub 目录 (干净环境开发测试)
 - 本地工作目录保留隐私信息
 - 出问题可从本地工作目录回滚
 
+XM|---
+
+## V3.0.0 通用架构升级 (2026-03-01)
+
+### 新增模块
+
+| 模块 | 功能 | 行数 |
+|------|------|------|
+| `selector_core.py` | 核心逻辑 (任务分析 + 模型路由 + 性能监控) | 373 |
+| `base_adapter.py` | 抽象基类 (定义标准接口) | 263 |
+| `adapter_opencode.py` | OpenCode 适配器 | 230 |
+| `adapter_openclaw.py` | OpenClaw 适配器 | 306 |
+| `selector_factory.py` | 工厂类 (动态实例化) | 233 |
+
+### 架构
+
+```
+selector_core.py (核心层)
+        │
+    ┌───┴───┐
+    ↓       ↓
+adapter_   adapter_
+opencode  openclaw
+```
+
+### SEO 优化
+
+- 项目更名为 "Smart Model Selector"
+- 强调免费 API 轮换功能
+- 支持 OpenCode/OpenClaw/Cursor 多平台
+
 ---
+
+## 本次开发内容 (2026-02-27 第二次修复)
 
 HR|## 本次开发内容 (2026-02-27 第二次修复)
 
