@@ -35,6 +35,45 @@ GitHub 目录 (干净环境开发测试)
 
 XM|---
 
+## V1.1 配置驱动架构 (2026-03-02)
+
+### 变更内容
+
+| 文件 | 功能 | 行数 |
+|------|------|------|
+| `models_config.json` | 模型配置文件 (JSON) | 160 |
+| `selector_core.py` | 支持从配置文件动态加载模型 | 421 |
+
+### 功能说明
+
+- **零代码添加模型**: 只需编辑 `models_config.json` 即可添加新模型
+- **向后兼容**: 配置文件加载失败时自动回退到硬编码默认模型
+- **新能力标签**: 添加 `PREMIUM` 能力标签
+
+### 配置字段说明
+
+```json
+{
+  "models": {
+    "model-id": {
+      "id": "model-id",
+      "name": "显示名称",
+      "provider": "提供商",
+      "capabilities": ["coding", "fast", "cheap"],
+      "context_window": 128000,
+      "cost_per_1k_input": 0.0,
+      "cost_per_1k_output": 0.0,
+      "latency_tier": "fast",
+      "enabled": true,
+      "priority": 100,
+      "tags": ["free", "fast"]
+    }
+  }
+}
+```
+
+---
+
 ## V3.0.0 通用架构升级 (2026-03-01)
 
 ### 新增模块
