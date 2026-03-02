@@ -259,7 +259,76 @@ python3 -c "from dual_engine import DualEngineManager; print(DualEngineManager()
 # 查看版本
 python3 version.py
 ```
+```
 
+---
+
+## 版本更新流程
+
+每次发布新版本时，按以下步骤操作：
+
+### 1. 更新版本号
+
+```bash
+# 更新 version.py
+# 修改 __version__ = "X.X.X"
+# 添加 VERSION_HISTORY 条目
+
+# 更新 pyproject.toml
+# version = "X.X.X"
+
+# 更新 README.md / README_EN.md
+[![Version](https://img.shields.io/badge/Version-vX.X.X-blue.svg)]
+```
+
+### 2. 提交代码
+
+```bash
+cd /Users/leiyuanwu/GitHub/smart-model-selector
+
+git add -A
+git commit -m "release: vX.X.X - 版本描述"
+```
+
+### 3. 创建 GitHub Release
+
+```bash
+# 创建 tag
+git tag -a vX.X.X -m "vX.X.X - 版本描述"
+
+# 推送到远程
+git push origin main
+git push origin vX.X.X
+
+# 创建 GitHub Release
+gh release create vX.X.X \
+  --title "vX.X.X - 版本标题" \
+  --notes "## vX.X.X\n\n### 新增功能\n- ...\n\n### 修复\n- ..."
+```
+
+### 4. 同步到本地
+
+```bash
+rsync -av --exclude='.git' --exclude='__pycache__' \
+  --exclude='*.egg-info' --exclude='dist' \
+  --exclude='api_config.json' \
+  /Users/leiyuanwu/GitHub/smart-model-selector/ \
+  /Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector/
+```
+
+### 5. 更新 DEVELOPMENT_LOG.md
+
+```markdown
+## 版本历史
+
+| 版本 | 日期 | 描述 |
+|------|------|------|
+| X.X.X | YYYY-MM-DD | 版本描述 |
+```
+
+---
+
+*最后更新: 2026-03-02*
 ---
 
 WY|*最后更新: 2026-02-27*
