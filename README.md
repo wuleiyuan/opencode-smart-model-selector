@@ -1,6 +1,6 @@
-JT|# 🧠 Smart Model Selector
+# 🧠 Smart Model Selector
 
-HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://github.com/wuleiyuan/smart-model-selector/releases)
+[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://github.com/wuleiyuan/smart-model-selector/releases)
 [![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/wuleiyuan/smart-model-selector?style=social)](https://github.com/wuleiyuan/smart-model-selector/stargazers)
@@ -8,11 +8,11 @@ HX|[![Version](https://img.shields.io/badge/Version-v3.0.0-blue.svg)](https://gi
 
 > 🇨🇳 中文 | [English](./README_EN.md)
 
-JV|SS|**智能模型选择系统** - 兼容 OpenCode / OpenClaw 的 AI 模型自动选择工具，**支持多个免费 API 智能轮换**，无需付费即可享受最优 AI 模型体验。
+**智能模型选择系统** - 兼容 OpenCode / OpenClaw 的 AI 模型自动选择工具，**支持多个免费 API 智能轮换**，无需付费即可享受最优 AI 模型体验。
 
-KX|> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/OpenClaw/Cursor 多平台支持
+> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/OpenClaw/Cursor 多平台支持
 
-KB|**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, OpenClaw, Cursor, Smart Selector, Token Optimization, API Failover, Multi-Provider, Model Selection, AI Coding Assistant, Code Generation
+**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, OpenClaw, Cursor, Smart Selector, Token Optimization, API Failover, Multi-Provider, Model Selection, AI Coding Assistant
 
 ## ✨ 核心特性
 
@@ -21,10 +21,36 @@ KB|**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT
 | 🤖 **智能路由** | 根据任务类型自动选择最优模型 (Coding/Research/Fast) |
 | ⚡ **负载均衡** | 多 API Key 轮询，避免单点限流 |
 | 🛡️ **故障转移** | API 故障自动切换，用户无感知 |
-QS|| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
-ZW|| 🆓 **免费 API 轮换** | 多个免费 API 智能轮换，自动选择最优 |
-QM|| 🔀 **多 Provider 支持** | Google/Anthropic/OpenAI/DeepSeek 自由切换 |
-JR|| ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
+| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
+| 🆓 **免费 API 轮换** | 多个免费 API 智能轮换，自动选择最优 |
+| 🔀 **多 Provider 支持** | Google/Anthropic/OpenAI/DeepSeek 自由切换 |
+| ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
+| 🔄 **热启动** | 测速记忆持久化，重启后无需重新探测网络 |
+| 🖥️ **多 Shell 支持** | 支持 Zsh 和 Bash 自动启动 |
+# 🧠 OpenCode Smart Model Selector
+
+[![Version](https://img.shields.io/badge/Version-v2.2.0-blue.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/releases)
+[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/wuleiyuan/opencode-smart-model-selector?style=social)](https://github.com/wuleiyuan/opencode-smart-model-selector/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/wuleiyuan/opencode-smart-model-selector/main.svg)](https://github.com/wuleiyuan/opencode-smart-model-selector/commits/main)
+
+> 🇨🇳 中文 | [English](./README_EN.md)
+
+#JX|**OpenCode 智能模型调度系统** - 基于任务类型自动选择最优 AI 模型，支持多 Provider 负载均衡、故障自动转移、成本优化。
+
+> 🤖 AI 模型路由 | ⚡ API 负载均衡 | 🛡️ 自动故障转移 | 💰 成本优化 | 🔄 OpenCode/Claude/GPT/Gemini 多模型支持
+
+**关键字**: AI, LLM, Model Router, API Gateway, Load Balancer, Claude, GPT, Gemini, DeepSeek, Qwen, OpenCode, Smart Selector, Token Optimization, API Failover, Multi-Provider
+
+## ✨ 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| 🤖 **智能路由** | 根据任务类型自动选择最优模型 (Coding/Research/Fast) |
+| ⚡ **负载均衡** | 多 API Key 轮询，避免单点限流 |
+| 🛡️ **故障转移** | API 故障自动切换，用户无感知 |
+| 💰 **成本优化** | 长文本自动降级，免费模型优先 |
 | ⏰ **智能 TTL** | 手动指定模型 24h 过期，自动恢复智能模式 |
 | 🔄 **热启动** | 测速记忆持久化，重启后无需重新探测网络 |
 | 🖥️ **多 Shell 支持** | 支持 Zsh 和 Bash 自动启动 |
@@ -123,23 +149,7 @@ smart-model-selector/
 ├── op.sh                      # 命令行工具
 ```
 
-JX|BV|## 🔗 OpenCode / OpenClaw / Cursor 集成
-
-BP|可以将 smart-model-selector 集成到 OpenCode、OpenClaw、Cursor 等 AI 编码助手作为模型选择器。
-
-### 为什么需要智能模型选择？
-
-- **OpenCode**: 开源 AI 编码助手，支持多种大模型
-- **OpenClaw**: 个人 AI 助手，支持多渠道接入
-- **Cursor**: AI 增强版 VS Code
-
-smart-model-selector 可以根据任务类型自动选择最优模型，提升开发效率。
-
-### OpenCode 集成
-
-BP|可以将 smart-model-selector 集成到 OpenCode、OpenClaw、Cursor 等 AI 编码助手作为模型选择器。
-
-### OpenCode 集成
+## 🔗 OpenCode 集成
 
 可以将 smart-model-selector 集成到 OpenCode CLI 作为模型选择器。
 
@@ -299,7 +309,7 @@ Primary API 故障 → 自动切换 Secondary API
 
 ### Token Monitor - Token 使用监控
 
-企业级 Token 使用监控系统，配套  Smart Model Selector 使用。
+企业级 Token 使用监控系统，配套 OpenCode Smart Model Selector 使用。
 
 | 特性 | 说明 |
 |------|------|
