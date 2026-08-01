@@ -340,3 +340,27 @@ rsync -av --exclude='.git' --exclude='__pycache__' \
 ---
 
 WY|*最后更新: 2026-02-27*
+
+---
+
+## 本次开发内容 (2026-08-01)
+
+### 变更内容
+- `models_config.json`: coding 任务首位新增 `custom/agnes-2.5-flash`
+
+### 背景
+- Agnes AI 于 2026-07-29 切换国内 API 节点 (`apihub.agnes-ai.com` → `apihub.agnes-ai.cn`)
+- agnes-2.5-flash 为官方主推免费模型，SWE-bench Verified 75.6，Coding 能力全球第一梯队（免费模型中领先）
+- 带 `custom/` 前缀：模型经由 litellm 代理 (localhost:4000) 路由，opencode 才能正确解析
+
+### 验证结果
+- JSON 合法性通过
+- `model-selector.sh "写代码"` → 输出 `custom/agnes-2.5-flash` ✅
+- research/writing 等其他任务类型不受影响
+
+### 关联 commit
+- `7c07124` feat: add agnes-2.5-flash as primary coding model
+
+---
+
+*最后更新: 2026-08-01*
