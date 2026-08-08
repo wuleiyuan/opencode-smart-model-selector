@@ -364,3 +364,28 @@ WY|*最后更新: 2026-02-27*
 ---
 
 *最后更新: 2026-08-01*
+
+## 本次开发内容 (2026-08-08)
+
+### 变更内容
+- `.gitignore`: 新增 `.workflow记忆*.md` 通配 + `.selector_state.json` / `.selector_state*.json` 规则
+- 移除 git 跟踪: `.selector_state.json`（运行时状态）、`.workflow记忆_openclaw.md`（本地开发记忆，含本地路径）
+
+### 背景
+- GitHub 全面体检发现：`.selector_state.json`（运行时状态 `{"idx":5}`）和 `.workflow记忆_openclaw.md`（1727B 私人记忆）被提交进公开仓库
+- 原 `.gitignore` 只写了 `.workflow记忆.md`，未匹配 `_openclaw` 后缀，导致记忆文件上过线
+- 两个文件已从 git 移除跟踪，**文件保留在本地**（rsync 未删除），仅停止上传
+
+### 验证结果
+- 语法检查：`py_compile` 5 个核心模块全通过 ✅
+- 导入检查：`SelectorCore OK` / `Factory OK` ✅
+- 功能检查：`selector_factory.py` 双适配器正常路由 ✅
+- GitHub CI：`a149287` 推送后 CI/CD 通过 ✅
+- `api_config.json` 深度扫描确认：全占位符，无真实密钥 ✅
+
+### 关联 commit
+- `a149287` fix: 移除运行时状态与本地记忆文件的上传，防止隐私暴露
+
+---
+
+*最后更新: 2026-08-08*
