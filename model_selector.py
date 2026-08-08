@@ -6,7 +6,7 @@ from pathlib import Path
 
 class SmartModelSelector:
     def __init__(self):
-        self.BASE_DIR = "/Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector"
+        self.BASE_DIR = os.environ.get("SMS_BASE_DIR", str(Path(__file__).resolve().parent))
         self.CONFIG_FILE = os.path.join(self.BASE_DIR, "models_config.json")
         self.KEYS_FILE = os.path.join(self.BASE_DIR, "keys.json")
         self.STATE_FILE = os.path.join(self.BASE_DIR, ".selector_state.json")
