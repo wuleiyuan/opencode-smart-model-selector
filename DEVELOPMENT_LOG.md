@@ -4,7 +4,7 @@ WZ|# Smart Model Selector 开发记录
 
 NW|智能模型选择系统 - 兼容 OpenCode/OpenClaw，支持多个免费 API 智能轮换，无需付费即可享受最优 AI 模型体验。
 
-**当前版本**: v4.1.0
+**当前版本**: v5.1.0
 
 ---
 
@@ -366,6 +366,27 @@ WY|*最后更新: 2026-02-27*
 *最后更新: 2026-08-01*
 
 ## 本次开发内容 (2026-08-08)
+
+### 变更内容
+- `model_selector.py`: `BASE_DIR` 移除硬编码本地路径 `/Users/leiyuanwu/LocalProjects/OpenCode/smart-model-selector`，改为可移植写法——环境变量 `SMS_BASE_DIR` 可覆盖，默认取脚本自身目录 (`Path(__file__).resolve().parent`)，与 `selector_core.py` 保持一致
+- `DEVELOPMENT_LOG.md`: 头部"当前版本" v4.1.0 → v5.1.0，消除版本号漂移（代码/README 均为 v5.1.0）
+
+### 背景
+- GitHub 全面体检遗留问题：`model_selector.py` 硬编码本地绝对路径，他人 clone 后无法运行
+- 选择抽象化方案：环境变量覆盖 + 仓库目录默认值，不动本机行为，开源可跑
+
+### 验证结果
+- 语法检查：`py_compile model_selector.py` 通过 ✅
+- 导入检查：`SmartModelSelector` 导入 OK ✅
+- 功能检查：`select()` 路由正常（写文章→agnes-2.5-flash / 快速→gemini-3.1-flash-lite-preview）✅
+- BASE_DIR 正确解析为 `~/GitHub/smart-model-selector` ✅
+
+### 关联 commit
+- `9c58c62` fix: model_selector.py BASE_DIR 改为可移植 (环境变量 SMS_BASE_DIR 覆盖 + 脚本目录默认)，移除硬编码本地路径
+
+---
+
+## 本次开发内容 (2026-08-08) 隐私修复
 
 ### 变更内容
 - `.gitignore`: 新增 `.workflow记忆*.md` 通配 + `.selector_state.json` / `.selector_state*.json` 规则
