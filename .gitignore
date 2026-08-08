@@ -28,7 +28,11 @@ build/
 *.tmp
 
 # 开发记忆 (本地使用)
-.workflow记忆.md
+.workflow记忆*.md
+
+# 运行时状态 (本地使用)
+.selector_state.json
+.selector_state*.json
 
 # 隐私文件 (不同步到 GitHub)
 keys.json
