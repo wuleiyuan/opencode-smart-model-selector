@@ -409,4 +409,30 @@ WY|*最后更新: 2026-02-27*
 
 ---
 
-*最后更新: 2026-08-08*
+## 本次开发内容 (2026-08-09) CI 假检查转真检查
+
+### 变更内容
+- `.github/workflows/ci.yml`:
+  - `black --check . || true` → `black --check .`（移除假检查，代码已全量格式化）
+  - `python -m pytest test/ -v || echo "No tests found"` → 核心模块导入验证（项目无 test/ 目录，原检查永远假通过）
+  - `bash -n op.sh || true` → 遍历全部 `*.sh` 且失败即退出（覆盖 op.sh/opw.sh/model-selector.sh/auto_start.sh/install.sh）
+- 全部 22 个 `.py` 文件按 black 格式重排（纯格式，无逻辑变更，946+/932- 对称）
+
+### 背景
+- GitHub 全面体检遗留问题：CI 三处 `|| true` / `|| echo` 假检查掩盖真实问题，CI 永远绿灯
+- 22 个 Python 文件不符合 black 格式（这正是 `|| true` 存在的原因），先格式化再转真检查
+
+### 验证结果
+- black 格式化后 `black --check .`：23 文件全部通过 ✅
+- 语法检查：全部 `.py` 文件 py_compile 通过 ✅
+- flake8 语法级 (E9/F63/F7/F82)：0 错误 ✅
+- shell 检查：全部 5 个 `.sh` 脚本 bash -n 通过 ✅
+- 核心模块导入验证：model_selector / selector_core / smart_model_dispatcher / api_server / version 全部导入 OK ✅
+- GitHub CI：`2325645` 推送后 CI/CD success（33s，check 全真）✅
+
+### 关联 commit
+- `2325645` fix: CI 假检查转真检查 + black 全量格式化
+
+---
+
+*最后更新: 2026-08-09*
