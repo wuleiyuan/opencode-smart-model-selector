@@ -30,11 +30,21 @@ jobs:
     
     - name: Check code format with black
       run: |
-        black --check . || true  # Non-blocking for now
+        black --check .
 
     - name: Run tests
       run: |
-        python -m pytest test/ -v || echo "No tests found"
+        python - <<'EOF'
+        import sys
+        sys.path.insert(0, '.')
+        # 验证核心模块可导入
+        import model_selector
+        import selector_core
+        import smart_model_dispatcher
+        import api_server
+        import version
+        print('OK: all modules imported')
+        EOF
 
   build:
     needs: test
@@ -62,6 +72,6 @@ jobs:
     
     - name: Verify Shell scripts
       run: |
-        bash -n op.sh || true  # Skip if syntax error
-        bash -n auto_start.sh || true
-        bash -n install.sh
+        for f in *.sh; do
+          bash -n "$f" || exit 1
+        done

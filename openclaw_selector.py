@@ -25,18 +25,26 @@ from datetime import datetime
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("openclaw_selector")
 
 # ============ 模型定义 ============
 
+
 class ModelInfo:
     """模型信息"""
-    def __init__(self, id: str, name: str, provider: str, 
-                 strengths: List[str], context_window: int = 200000,
-                 cost_per_1k: float = 0.0, latency_tier: str = "fast"):
+
+    def __init__(
+        self,
+        id: str,
+        name: str,
+        provider: str,
+        strengths: List[str],
+        context_window: int = 200000,
+        cost_per_1k: float = 0.0,
+        latency_tier: str = "fast",
+    ):
         self.id = id
         self.name = name
         self.provider = provider
@@ -44,6 +52,7 @@ class ModelInfo:
         self.context_window = context_window
         self.cost_per_1k = cost_per_1k
         self.latency_tier = latency_tier  # fast, medium, slow
+
 
 # 支持的模型列表
 MODELS = {
@@ -55,7 +64,7 @@ MODELS = {
         strengths=["research", "writing", "complex_reasoning"],
         context_window=200000,
         cost_per_1k=15.0,
-        latency_tier="medium"
+        latency_tier="medium",
     ),
     "claude-sonnet-4-5": ModelInfo(
         id="claude-sonnet-4-5",
@@ -64,7 +73,7 @@ MODELS = {
         strengths=["coding", "balanced"],
         context_window=200000,
         cost_per_1k=3.0,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
     "claude-haiku-3-5": ModelInfo(
         id="claude-haiku-3-5",
@@ -73,9 +82,8 @@ MODELS = {
         strengths=["fast", "cheap"],
         context_window=200000,
         cost_per_1k=0.8,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
-    
     # Google Gemini
     "gemini-2-0-pro": ModelInfo(
         id="gemini-2-0-pro",
@@ -84,7 +92,7 @@ MODELS = {
         strengths=["research", "multimodal"],
         context_window=2000000,
         cost_per_1k=1.25,
-        latency_tier="medium"
+        latency_tier="medium",
     ),
     "gemini-2-0-flash": ModelInfo(
         id="gemini-2-0-flash",
@@ -93,9 +101,8 @@ MODELS = {
         strengths=["fast", "coding"],
         context_window=1000000,
         cost_per_1k=0.0,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
-    
     # OpenAI
     "gpt-4o": ModelInfo(
         id="gpt-4o",
@@ -104,7 +111,7 @@ MODELS = {
         strengths=["coding", "balanced"],
         context_window=128000,
         cost_per_1k=2.5,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
     "gpt-4o-mini": ModelInfo(
         id="gpt-4o-mini",
@@ -113,9 +120,8 @@ MODELS = {
         strengths=["fast", "cheap"],
         context_window=128000,
         cost_per_1k=0.15,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
-    
     # DeepSeek
     "deepseek-chat": ModelInfo(
         id="deepseek-chat",
@@ -124,9 +130,8 @@ MODELS = {
         strengths=["coding", "cheap"],
         context_window=64000,
         cost_per_1k=0.14,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
-    
     # Qwen
     "qwen-2-5-coder-32b": ModelInfo(
         id="qwen-2-5-coder-32b",
@@ -135,9 +140,8 @@ MODELS = {
         strengths=["coding"],
         context_window=32000,
         cost_per_1k=0.0,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
-    
     # OpenCode (免费)
     "minimax-2.5-free": ModelInfo(
         id="minimax-2.5-free",
@@ -146,7 +150,7 @@ MODELS = {
         strengths=["fast", "cheap"],
         context_window=128000,
         cost_per_1k=0.0,
-        latency_tier="fast"
+        latency_tier="fast",
     ),
 }
 
@@ -176,36 +180,37 @@ TASK_PATTERNS = {
 
 # ============ 性能监控 ============
 
+
 class PerformanceTracker:
     """性能跟踪器 - 记录模型响应时间和成功率"""
-    
+
     CACHE_FILE = Path.home() / ".config" / "openclaw" / "model_performance.json"
-    
+
     def __init__(self):
         self._performance: Dict[str, Dict] = {}  # model_id -> {latency, success, fail, last_used}
         self._load_cache()
-    
+
     def _load_cache(self):
         """加载性能缓存"""
         try:
             if self.CACHE_FILE.exists():
-                with open(self.CACHE_FILE, 'r') as f:
+                with open(self.CACHE_FILE, "r") as f:
                     data = json.load(f)
                     self._performance = data.get("performance", {})
                     logger.info(f"[OK] 加载性能缓存: {len(self._performance)} 个模型")
         except Exception as e:
             logger.debug(f"性能缓存加载失败: {e}")
-    
+
     def _save_cache(self):
         """保存性能缓存"""
         try:
             self.CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
             data = {"performance": self._performance, "updated_at": int(time.time())}
-            with open(self.CACHE_FILE, 'w') as f:
+            with open(self.CACHE_FILE, "w") as f:
                 json.dump(data, f)
         except Exception as e:
             logger.debug(f"性能缓存保存失败: {e}")
-    
+
     def record_request(self, model_id: str, latency: float, success: bool):
         """记录请求结果"""
         if model_id not in self._performance:
@@ -215,26 +220,26 @@ class PerformanceTracker:
                 "fail_count": 0,
                 "last_used": 0,
             }
-        
+
         stats = self._performance[model_id]
         stats["latency_sum"] += latency
         stats["success_count"] += 1 if success else 0
         stats["fail_count"] += 0 if success else 1
         stats["last_used"] = int(time.time())
-        
+
         self._save_cache()
-    
+
     def get_stats(self, model_id: str) -> Optional[Dict]:
         """获取模型性能统计"""
         return self._performance.get(model_id)
-    
+
     def get_average_latency(self, model_id: str) -> float:
         """获取平均延迟"""
         stats = self._performance.get(model_id)
         if not stats or stats["success_count"] == 0:
             return 0.0
         return stats["latency_sum"] / stats["success_count"]
-    
+
     def get_success_rate(self, model_id: str) -> float:
         """获取成功率"""
         stats = self._performance.get(model_id)
@@ -244,93 +249,96 @@ class PerformanceTracker:
         if total == 0:
             return 1.0
         return stats["success_count"] / total
-    
+
     def is_in_cooldown(self, model_id: str) -> bool:
         """检查模型是否在冷却期"""
         # 简单实现：如果失败率过高，认为在冷却期
         rate = self.get_success_rate(model_id)
         return rate < 0.5
 
+
 # ============ 模型选择器 ============
+
 
 class OpenClawModelSelector:
     """OpenClaw 自动模型选择器 - 混合策略"""
-    
+
     def __init__(self):
         self.tracker = PerformanceTracker()
-    
+
     def analyze_task(self, task_description: str) -> str:
         """分析任务类型"""
         task_lower = task_description.lower()
-        
+
         # 按优先级匹配
         for task_type, patterns in TASK_PATTERNS.items():
             for pattern in patterns:
                 if re.search(pattern, task_lower, re.IGNORECASE):
                     logger.info(f"任务类型识别: {task_type}")
                     return task_type
-        
+
         return "balanced"  # 默认均衡型
-    
+
     def select(self, task_description: str) -> Tuple[str, str]:
         """
         选择最优模型
-        
+
         Returns:
             (model_id, reason)
         """
         # 1. 分析任务类型
         task_type = self.analyze_task(task_description)
-        
+
         # 2. 获取候选模型列表
         candidates = self._get_candidates_by_task(task_type)
-        
+
         # 3. 按性能排序 (性能驱动)
         candidates = self._sort_by_performance(candidates)
-        
+
         # 4. 选择最佳模型
         if not candidates:
             # 没有可用模型，使用默认
             return "minimax-2.5-free", "[Default] 无可用模型，使用免费模型"
-        
+
         selected_model = candidates[0]
         reason = f"[{task_type}] 任务匹配 + 性能优化"
-        
+
         return selected_model, reason
-    
+
     def _get_candidates_by_task(self, task_type: str) -> List[str]:
         """根据任务类型获取候选模型"""
         candidates = []
-        
+
         for model_id, model in MODELS.items():
             if task_type in model.strengths:
                 candidates.append(model_id)
-        
+
         # 如果没有匹配的，返回所有模型
         if not candidates:
             candidates = list(MODELS.keys())
-        
+
         return candidates
-    
+
     def _sort_by_performance(self, model_ids: List[str]) -> List[str]:
         """按性能排序"""
+
         def sort_key(model_id: str) -> float:
             # 综合评分：低延迟 + 高成功率
             latency = self.tracker.get_average_latency(model_id)
             success_rate = self.tracker.get_success_rate(model_id)
             in_cooldown = self.tracker.is_in_cooldown(model_id)
-            
+
             # 在冷却期的模型惩罚
             cooldown_penalty = 1000 if in_cooldown else 0
-            
+
             return latency + cooldown_penalty - (success_rate * 10)
-        
+
         return sorted(model_ids, key=sort_key)
-    
+
     def get_model_info(self, model_id: str) -> Optional[ModelInfo]:
         """获取模型信息"""
         return MODELS.get(model_id)
-    
+
     def list_models(self) -> Dict:
         """列出所有模型"""
         return {
@@ -347,30 +355,30 @@ class OpenClawModelSelector:
             for model_id, model in MODELS.items()
         }
 
+
 # ============ 主函数 ============
+
 
 def main():
     """主入口"""
     import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="OpenClaw Auto Model Selector - 自动模型选择器"
-    )
+
+    parser = argparse.ArgumentParser(description="OpenClaw Auto Model Selector - 自动模型选择器")
     parser.add_argument("task", nargs="?", help="任务描述")
     parser.add_argument("--json", action="store_true", help="JSON 输出格式")
     parser.add_argument("--list", action="store_true", help="列出所有模型")
     parser.add_argument("--stats", action="store_true", help="显示性能统计")
-    
+
     args = parser.parse_args()
-    
+
     selector = OpenClawModelSelector()
-    
+
     # 列出所有模型
     if args.list:
         models = selector.list_models()
         print(json.dumps(models, ensure_ascii=False, indent=2))
         return
-    
+
     # 显示性能统计
     if args.stats:
         tracker = PerformanceTracker()
@@ -381,11 +389,11 @@ def main():
                 print(f"  平均延迟: {tracker.get_average_latency(model_id):.2f}ms")
                 print(f"  成功率: {tracker.get_success_rate(model_id)*100:.1f}%")
         return
-    
+
     # 选择模型
     if args.task:
         model_id, reason = selector.select(args.task)
-        
+
         if args.json:
             result = {
                 "model": model_id,
@@ -394,7 +402,7 @@ def main():
                     "name": MODELS[model_id].name,
                     "provider": MODELS[model_id].provider,
                     "strengths": MODELS[model_id].strengths,
-                }
+                },
             }
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:
@@ -402,6 +410,7 @@ def main():
             print(reason)
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

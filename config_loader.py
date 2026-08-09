@@ -18,6 +18,7 @@ logger = logging.getLogger("config_loader")
 # 尝试导入 YAML
 try:
     import yaml
+
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
@@ -27,6 +28,7 @@ except ImportError:
 @dataclass
 class TelemetryConfig:
     """埋点配置"""
+
     enabled: bool = True
     endpoint: Optional[str] = None
     log_level: str = "INFO"
@@ -36,6 +38,7 @@ class TelemetryConfig:
 @dataclass
 class SettingsConfig:
     """全局设置"""
+
     cooldown_threshold: int = 3
     cache_ttl_seconds: int = 14400
     enable_fallback: bool = True
@@ -48,6 +51,7 @@ class SettingsConfig:
 @dataclass
 class Config:
     """配置对象"""
+
     version: str = "2.0.0"
     models: Dict[str, Dict] = field(default_factory=dict)
     task_mappings: Dict[str, list] = field(default_factory=dict)
@@ -59,16 +63,16 @@ class Config:
 
 class ConfigLoader:
     """配置加载器"""
-    
+
     # 配置文件路径
     CONFIG_DIR = Path(__file__).parent
     YAML_CONFIG = CONFIG_DIR / "config.yaml"
     JSON_CONFIG = CONFIG_DIR / "models_config.json"
-    
+
     def __init__(self):
         self._config: Optional[Config] = None
         self._load_config()
-    
+
     def _load_config(self):
         """加载配置"""
         # 优先加载 YAML
@@ -79,13 +83,13 @@ class ConfigLoader:
         else:
             logger.warning("No config file found, using defaults")
             self._config = Config()
-    
+
     def _load_yaml(self):
         """从 YAML 加载配置"""
         try:
-            with open(self.YAML_CONFIG, 'r', encoding='utf-8') as f:
+            with open(self.YAML_CONFIG, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
-            
+
             # 解析设置
             settings_data = data.get("settings", {})
             settings = SettingsConfig(
@@ -97,7 +101,7 @@ class ConfigLoader:
                 enable_performance_tracking=settings_data.get("enable_performance_tracking", True),
                 performance_retention_days=settings_data.get("performance_retention_days", 7),
             )
-            
+
             # 解析埋点
             telemetry_data = data.get("telemetry", {})
             telemetry = TelemetryConfig(
@@ -106,7 +110,7 @@ class ConfigLoader:
                 log_level=telemetry_data.get("log_level", "INFO"),
                 record=telemetry_data.get("record", ["model_selection", "latency", "errors"]),
             )
-            
+
             # 构建配置对象
             self._config = Config(
                 version=data.get("version", "2.0.0"),
@@ -117,57 +121,57 @@ class ConfigLoader:
                 telemetry=telemetry,
                 adapters=data.get("adapters", {}),
             )
-            
+
             logger.info(f"[ConfigLoader] 从 YAML 加载配置: {len(self._config.models)} 个模型")
-            
+
         except Exception as e:
             logger.error(f"[ConfigLoader] YAML 加载失败: {e}")
             self._load_json()
-    
+
     def _load_json(self):
         """从 JSON 加载配置 (后备)"""
         try:
             if self.JSON_CONFIG.exists():
-                with open(self.JSON_CONFIG, 'r', encoding='utf-8') as f:
+                with open(self.JSON_CONFIG, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                
+
                 self._config = Config(
                     version=data.get("version", "1.0.0"),
                     models=data.get("models", {}),
                     task_mappings=data.get("task_mappings", {}),
                     fallback=data.get("fallback", {}),
                 )
-                
+
                 logger.info(f"[ConfigLoader] 从 JSON 加载配置: {len(self._config.models)} 个模型")
         except Exception as e:
             logger.error(f"[ConfigLoader] JSON 加载失败: {e}")
             self._config = Config()
-    
+
     @property
     def config(self) -> Config:
         """获取配置对象"""
         return self._config
-    
+
     def get_models(self) -> Dict[str, Dict]:
         """获取模型配置"""
         return self._config.models if self._config else {}
-    
+
     def get_task_mapping(self, task_type: str) -> list:
         """获取任务类型映射"""
         return self._config.task_mappings.get(task_type, [])
-    
+
     def get_fallback_order(self, task_type: str = "default") -> list:
         """获取降级顺序"""
         return self._config.fallback.get(task_type, self._config.fallback.get("default", []))
-    
+
     def get_settings(self) -> SettingsConfig:
         """获取设置"""
         return self._config.settings
-    
+
     def get_telemetry(self) -> TelemetryConfig:
         """获取埋点配置"""
         return self._config.telemetry
-    
+
     def is_enabled(self, model_id: str) -> bool:
         """检查模型是否启用"""
         model = self._config.models.get(model_id, {})

@@ -25,7 +25,7 @@ from base_adapter import (
     BaseAPIServerAdapter,
     build_task_from_messages,
     create_error_response,
-    create_success_response
+    create_success_response,
 )
 
 logger = logging.getLogger("omo_adapter")
@@ -51,10 +51,7 @@ class OMOAdapter(BaseAPIServerAdapter):
                 "temperature": raw_input.get("temperature", 0.7),
                 "max_tokens": raw_input.get("max_tokens", 4096),
                 "stream": raw_input.get("stream", False),
-                "metadata": {
-                    "source": "omo_api",
-                    "provider": "omo"
-                }
+                "metadata": {"source": "omo_api", "provider": "omo"},
             }
         return {"task_description": str(raw_input), "metadata": {}}
 
@@ -85,33 +82,26 @@ class OMOAdapter(BaseAPIServerAdapter):
             "temperature": temperature,
             "max_tokens": max_tokens,
             "stream": stream,
-            "metadata": {
-                "source": "omo_chat",
-                "provider": "omo"
-            }
+            "metadata": {"source": "omo_chat", "provider": "omo"},
         }
 
-    def format_chat_response(self, model: str, content: str,
-                            metadata: Optional[Dict] = None) -> Dict:
+    def format_chat_response(
+        self, model: str, content: str, metadata: Optional[Dict] = None
+    ) -> Dict:
         response = create_success_response(model, content, metadata)
         response["provider"] = "omo"
         return response
 
-    def format_stream_chunk(self, model: str, content: str,
-                           chunk_index: int = 0) -> str:
+    def format_stream_chunk(self, model: str, content: str, chunk_index: int = 0) -> str:
         request_id = f"omo-{uuid.uuid4().hex[:8]}"
         data = {
             "id": f"chatcmpl-{int(time.time())}",
             "object": "chat.completion.chunk",
             "created": int(time.time()),
             "model": model,
-            "choices": [{
-                "index": chunk_index,
-                "delta": {
-                    "content": content
-                },
-                "finish_reason": None
-            }]
+            "choices": [
+                {"index": chunk_index, "delta": {"content": content}, "finish_reason": None}
+            ],
         }
         chunk = f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
         logger.debug(f"[OMO] Stream chunk: {chunk[:100]}...")
@@ -124,11 +114,7 @@ class OMOAdapter(BaseAPIServerAdapter):
         if request_id is None:
             request_id = f"omo-{uuid.uuid4().hex[:8]}"
         error_data = {
-            "error": {
-                "message": error_message,
-                "type": "streaming_error",
-                "code": "stream_error"
-            }
+            "error": {"message": error_message, "type": "streaming_error", "code": "stream_error"}
         }
         return f"data: {json.dumps(error_data, ensure_ascii=False)}\n\n"
 
@@ -137,7 +123,7 @@ class OMOAdapter(BaseAPIServerAdapter):
             "Content-Type": "application/json",
             "X-Request-Id": f"omo-{uuid.uuid4().hex[:8]}",
             "Cache-Control": "no-cache",
-            "Connection": "keep-alive"
+            "Connection": "keep-alive",
         }
         for key, value in required_headers.items():
             if key not in headers:
@@ -147,29 +133,27 @@ class OMOAdapter(BaseAPIServerAdapter):
     def format_model_list(self, models: Dict[str, Dict]) -> Dict:
         data = []
         for model_id, info in models.items():
-            data.append({
-                "id": model_id,
-                "object": "model",
-                "created": 1700000000,
-                "owned_by": info.get("provider", "smart-selector"),
-                "provider": info.get("provider", "omo")
-            })
-        return {
-            "object": "list",
-            "data": data
-        }
+            data.append(
+                {
+                    "id": model_id,
+                    "object": "model",
+                    "created": 1700000000,
+                    "owned_by": info.get("provider", "smart-selector"),
+                    "provider": info.get("provider", "omo"),
+                }
+            )
+        return {"object": "list", "data": data}
 
     def health_response(self) -> Dict:
         return {
             "status": "ok",
             "service": "Smart Model Selector",
             "platform": "omo",
-            "version": "5.1.0"
+            "version": "5.1.0",
         }
 
 
-def create_chat_completion(adapter: OMOAdapter, core,
-                          request_data: Dict) -> Dict:
+def create_chat_completion(adapter: OMOAdapter, core, request_data: Dict) -> Dict:
     try:
         parsed = adapter.parse_chat_request(request_data)
 
@@ -184,11 +168,7 @@ def create_chat_completion(adapter: OMOAdapter, core,
 
         logger.info(f"[OMO] 选择模型: {model_id} ({provider}) - {reason}")
 
-        return {
-            "model": model_id,
-            "provider": provider,
-            "reason": reason
-        }
+        return {"model": model_id, "provider": provider, "reason": reason}
 
     except Exception as e:
         logger.error(f"OMO 选择失败: {e}")
@@ -197,8 +177,10 @@ def create_chat_completion(adapter: OMOAdapter, core,
 
 def main():
     from pathlib import Path
+
     SCRIPT_DIR = Path(__file__).parent
     import sys
+
     sys.path.insert(0, str(SCRIPT_DIR))
 
     from selector_core import SelectorCore
@@ -208,9 +190,7 @@ def main():
 
     test_request = {
         "model": "auto",
-        "messages": [
-            {"role": "user", "content": "帮我写一个排序算法"}
-        ]
+        "messages": [{"role": "user", "content": "帮我写一个排序算法"}],
     }
 
     result = create_chat_completion(adapter, core, test_request)

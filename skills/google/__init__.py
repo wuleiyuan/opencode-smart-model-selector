@@ -11,28 +11,29 @@ import requests
 from typing import Generator, Dict, List
 from skills.base import BaseModelSkill, SkillRegistry
 
+
 class GoogleSkill(BaseModelSkill):
     """Google Gemini 模型技能"""
-    
+
     @property
     def name(self) -> str:
         return "google"
-    
+
     @property
     def supported_models(self) -> List[str]:
         return ["gemini", "gemini-3.1-pro-preview", "gemini-2.5-pro", "gemini-2.5-flash"]
-    
+
     @property
     def priority(self) -> int:
         return 10  # 高优先级
-    
+
     def stream(self, api_key: str, messages: List[Dict], **kwargs) -> Generator[str, None, None]:
         """
         Google Gemini 流式调用
         """
         model = kwargs.get("model", "gemini-2.5-pro")
         timeout = kwargs.get("timeout", 60)
-        
+
         # 转换消息格式
         gemini_msgs = []
         for m in messages:
@@ -48,28 +49,28 @@ class GoogleSkill(BaseModelSkill):
                 gemini_msgs.append({"role": role, "parts": parts})
             else:
                 gemini_msgs.append({"role": role, "parts": [{"text": str(content)}]})
-        
+
         # 构建 URL（使用 v1beta 端点）
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse&key={api_key}"
-        
+
         # 处理代理
         proxies = {
             "http": os.environ.get("HTTP_PROXY", ""),
-            "https": os.environ.get("HTTPS_PROXY", "")
+            "https": os.environ.get("HTTPS_PROXY", ""),
         }
         if not proxies.get("http"):
             proxies = None
-        
+
         try:
             resp = requests.post(
                 url,
                 json={"contents": gemini_msgs},
                 timeout=(10, timeout),
                 proxies=proxies,
-                stream=True
+                stream=True,
             )
             resp.raise_for_status()
-            
+
             for line in resp.iter_lines():
                 if line:
                     decoded = line.decode("utf-8")
@@ -89,24 +90,31 @@ class GoogleSkill(BaseModelSkill):
                                             chunk = {
                                                 "id": "gemini",
                                                 "object": "chat.completion.chunk",
-                                                "choices": [{"delta": {"content": text}, "index": 0}]
+                                                "choices": [
+                                                    {"delta": {"content": text}, "index": 0}
+                                                ],
                                             }
                                             yield f"data: {json.dumps(chunk)}\n\n"
                         except (json.JSONDecodeError, KeyError, IndexError):
                             continue
-            
+
             # 已经去除了内置的 DONE 返回，由 dispatcher 统一处理
-            
+
         except Exception as e:
             error_chunk = {
                 "id": "error",
                 "object": "chat.completion.chunk",
-                "choices": [{"delta": {"content": f"\n\n> ⚠️ **[Google 引擎异常]**: {str(e)}\n\n"}, "index": 0}]
+                "choices": [
+                    {
+                        "delta": {"content": f"\n\n> ⚠️ **[Google 引擎异常]**: {str(e)}\n\n"},
+                        "index": 0,
+                    }
+                ],
             }
             yield f"data: {json.dumps(error_chunk)}\n\n"
             # 🩹 P0 修复：必须抛出异常！激活 dispatcher 故障轮询
             raise e
-    
+
     def health_check(self, api_key: str) -> bool:
         """检查 Google API 是否可用"""
         try:

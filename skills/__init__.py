@@ -6,7 +6,7 @@ Skills - 模型技能插件系统
 
 使用方式:
     from skills import auto_register_skills, SkillRegistry
-    
+
     auto_register_skills()  # 自动注册所有技能
     skills = SkillRegistry.get_all()  # 获取所有技能
 """
